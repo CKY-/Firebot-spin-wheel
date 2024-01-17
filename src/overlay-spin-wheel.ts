@@ -1,9 +1,11 @@
 import { Firebot, RunRequest, ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
-import { UUID } from "crypto";
+import { v4 } from "uuid";
 import { resolve } from "path";
 
 import { logger } from "./logger";
 import { webServer } from "./main";
+
+import { randomUUID } from "crypto";
 
 const wait = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -49,6 +51,14 @@ export function overlaySpinWheelEffectType(
             icon: "fad fa-spinner",
             categories: ["overlay"],
             dependencies: [],
+            // @ts-ignore
+            outputs: [
+                {
+                    label: "Winning Slice",
+                    description: "Name of the winning slice",
+                    defaultName: "winningSlice"
+                }
+            ],
             triggers: {
                 command: true,
                 custom_script: true,
@@ -72,6 +82,11 @@ export function overlaySpinWheelEffectType(
                 <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
 
                 <firebot-input input-title="Timer Ended" model="effect.endTriggerCallUrl" placeholder="Time Up Trigger."></firebot-input>
+                <div class="volume-slider-wrapper">
+                <i class="fal fa-volume-down volume-low"></i>
+                <rzslider rz-slider-model="effect.volume" rz-slider-options="{floor: 1, ceil: 10, hideLimitLabels: true, showSelectionBar: true}"></rzslider>
+                <i class="fal fa-volume-up volume-high"></i>
+            </div>
             </eos-container>
             <eos-container header="Advanced Settings" class="setting-padtop">
                 <label class="control-fb control--checkbox">Show Advanced Settings
@@ -93,6 +108,7 @@ export function overlaySpinWheelEffectType(
                             min="1" max="10000"
                             ng-model="effect.height">
                     </div>
+  
                     <p>This defines the size of the (invisible) box that the above timer will be placed in.</p>
 
                     <label class="control-fb control--checkbox"> Show Debug Border <tooltip text="'Show a red border around the timer to make it easier to see its position.'"></tooltip>
@@ -254,65 +270,90 @@ export function overlaySpinWheelEffectType(
                 right: "right",
                 center: "center"
             });
-            const data = {
+            const baseCanvasSize = 500;
+            const arcAdjust = -90;
+            const dragCapturePeriod = 250;
+            const data: any = {
                 overlayInstance: event.effect.overlayInstance,
-                name: "Takeaway",
-                radius: 0.89,
-                pointerAngle: 90,
-                itemLabelRadius: 0.92,
-                itemLabelRadiusMax: 0.37,
-                itemLabelRotation: 0,
-                itemLabelAlign: AlignText.right,
-                itemLabelColors: ["#000"],
-                itemLabelBaselineOffset: -0.06,
-                itemLabelFont: "Rubik",
-                itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
-                rotationSpeedMax: 700,
-                rotationResistance: -110,
-                lineWidth: 0,
-                overlayImage:
-                    "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
-                borderWidth: 0,
-                // debug: true, // So we can see pointer angle.
-                items: [
-                    {
-                        label: "Dog",
-                        weight: 6
-                    },
-                    {
-                        label: "Cat",
-                        weight: 4.9
-                    },
-                    {
-                        label: "Fish",
-                        weight: 4.1
-                    },
-                    {
-                        label: "Rabbit",
-                        weight: 3.7
-                    },
-                    {
-                        label: "Bird",
-                        weight: 3
-                    },
-                    {
-                        label: "Chicken",
-                        weight: 2.8
-                    },
-                    {
-                        label: "Lizard",
-                        weight: 2.5
-                    },
-                    {
-                        label: "Turtle",
-                        weight: 1
-                    }
-                ]
+                uuid: randomUUID(),
+                displayDuration: 5,
+                props: {
+                    name: "Takeaway",
+                    radius: 0.89,
+                    pointerAngle: 90,
+                    itemLabelRadius: 0.92,
+                    itemLabelRadiusMax: 0.37,
+                    itemLabelRotation: 0,
+                    itemLabelAlign: AlignText.right,
+                    itemLabelColors: ["#000"],
+                    itemLabelBaselineOffset: -0.06,
+                    itemLabelFont: "Rubik",
+                    itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
+                    rotationSpeedMax: 700,
+                    rotationResistance: -110,
+                    lineWidth: 0,
+                    overlayImage:
+                        "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
+                    borderWidth: 0,
+                    // debug: true, // So we can see pointer angle.
+                    items: [
+                        {
+                            label: "Dog",
+                            weight: 6
+                        },
+                        {
+                            label: "Cat",
+                            weight: 4.9
+                        },
+                        {
+                            label: "Fish",
+                            weight: 4.1
+                        },
+                        {
+                            label: "Rabbit",
+                            weight: 3.7
+                        },
+                        {
+                            label: "Bird",
+                            weight: 3
+                        },
+                        {
+                            label: "Chicken",
+                            weight: 2.8
+                        },
+                        {
+                            label: "Lizard",
+                            weight: 2.5
+                        },
+                        {
+                            label: "Turtle",
+                            weight: 1
+                        }
+                    ]
+                }
             };
+
+            const waitPromise = new Promise<string>((resolve) => {
+                const listener = (ev: any) => {
+                    if (ev.name !== data.uuid) return;
+                    // @ts-ignore
+                    webServer.off("overlay-event", listener);
+                    resolve(ev.data.result);
+                }
+                // @ts-ignore
+                webServer.on("overlay-event", listener);
+            });
 
             webServer.sendToOverlay("cky-spinwheel", data);
 
-            return true;
+            const winningSlice = await waitPromise;
+
+            return {
+                success: true,
+                outputs: {
+                    winningSlice
+                }
+            };
         },
         overlayExtension: {
             dependencies: {
@@ -321,13 +362,13 @@ export function overlaySpinWheelEffectType(
             },
             event: {
                 name: "cky-spinwheel",
-                onOverlayEvent: (props: any) => {
+                onOverlayEvent: (event: any) => {
                     // Frontend Code Here
                     //const html = require('./spinhtml.html');
 
                     /*html*/
                     const html = `
-                    <div class="root">
+                    <div id={{WHEELSPINDIVID}}>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400&display=swap');
@@ -378,6 +419,41 @@ export function overlaySpinWheelEffectType(
 
                     // script src="https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js" /script
 
+                    function loadHtmlAndExecute() {
+                        const uuid = event.uuid;
+                        const displayDuration = event.displayDuration;
+                        $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
+                        const container = $(`#${uuid} .wheel-wrapper`);
+                        // @ts-ignore
+                        window.wheel = new spinWheel.Wheel(, event.props);
+                        console.log(event.props)
+                        function fetchWinningItemIndexFromApi() {
+                            return getRandomInt(0, event.props.items.length);
+                        }
+                        function getRandomInt(min: number, max: number) {
+                            min = Math.ceil(min);
+                            max = Math.floor(max);
+                            return Math.floor(Math.random() * (max - min) + min);
+                        }
+                        // @ts-ignore
+                        wheel.pointerAngle = 90;
+                        const winningItemIndex = fetchWinningItemIndexFromApi();
+                        const duration = 2600;
+                        const revolutions = 200;
+                        // @ts-ignore
+                        wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1);
+                        // @ts-ignore
+                        wheel.onRest = (e) => {
+                            // @ts-ignore
+                            sendWebsocketEvent(uuid, { "result": `"${event.props.items[e.currentIndex].label}"` });
+
+                            console.log(e);
+                            console.log(event.props.items[e.currentIndex].label);
+
+                            setTimeout(() => $(`#${uuid}`).remove(), displayDuration * 1000);
+                        };
+                    }
+
                     const script_elem = document.getElementById("cky-spin-wheel-iife");
 
                     if (script_elem == null) {
@@ -389,41 +465,14 @@ export function overlaySpinWheelEffectType(
 
                         spin_wheel.id = "cky-spin-wheel-iife";
 
+                        spin_wheel.onload = function () {
+                            loadHtmlAndExecute();
+                        }
+
                         document.head.appendChild(spin_wheel);
+                    } else {
+                        loadHtmlAndExecute();
                     }
-
-                    $("#wrapper").append(html);
-
-                    const uuid = props.uuid;
-                    delete props.uuid;
-                    delete props.overlayInstance;
-                    const container = document.querySelector(".wheel-wrapper");
-                    // @ts-ignore
-                    window.wheel = new spinWheel.Wheel(container, props);
-
-                    function fetchWinningItemIndexFromApi() {
-                        return getRandomInt(0, props.items.length);
-                    }
-                    function getRandomInt(min: number, max: number) {
-                        min = Math.ceil(min);
-                        max = Math.floor(max);
-                        return Math.floor(Math.random() * (max - min) + min);
-                    }
-                    // @ts-ignore
-                    wheel.pointerAngle = 90;
-                    const winningItemIndex = fetchWinningItemIndexFromApi();
-                    const duration = 2600;
-                    const revolutions = 200;
-                    // @ts-ignore
-                    wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1);
-                    // @ts-ignore
-                    wheel.onRest = (e) => {
-                        // @ts-ignore
-                        sendWebsocketEvent(uuid, { "result": `"${props.items[e.currentIndex].label}"` });
-
-                        console.log(e);
-                        console.log(props.items[e.currentIndex].label);
-                    };
                 }
             }
         }
