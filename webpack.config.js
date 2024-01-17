@@ -16,7 +16,7 @@ module.exports = {
     filename: `${packageJson.scriptOutputName}.js`,
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".js", ".html"],
   },
   module: {
     rules: [
@@ -24,10 +24,18 @@ module.exports = {
         test: /\.ts$/,
         loader: "ts-loader",
       },
+      {
+        test: /\.html$/i,
+        loader: 'raw-loader',
+      },
+      {
+        test: /frontendJs\/(.*)\.js$/,
+        loader: "raw-loader",
+      }
     ],
   },
   optimization: {
-    minimize: true,
+    minimize: false,
 
     minimizer: [
       new TerserPlugin({
