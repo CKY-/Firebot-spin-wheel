@@ -423,10 +423,11 @@ export function overlaySpinWheelEffectType(
                         const uuid = event.uuid;
                         const displayDuration = event.displayDuration;
                         $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
-                        const container = $(`#${uuid} .wheel-wrapper`);
-                        // @ts-ignore
-                        window.wheel = new spinWheel.Wheel(, event.props);
+                        const container = document.getElementById(uuid).getElementsByClassName("wheel-wrapper")[0];
                         console.log(event.props)
+                        // @ts-ignore
+                        window.wheel = new spinWheel.Wheel(container, event.props);
+                    
                         function fetchWinningItemIndexFromApi() {
                             return getRandomInt(0, event.props.items.length);
                         }
