@@ -376,12 +376,23 @@ export function overlaySpinWheelEffectType(
     <div class="wheel-wrapper"></div>
 </div>`;
 
-                    // <script src="https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js" async="false"
-        defer="false"></script>
+                    // script src="https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js" /script
 
-                    const htmlElement = html.replace("{{SCRIPTENDTAG}}", "</script>"); //.replace("{{SPIN_WHEEL_SCRIPT_UUID}}", props.uuid);
+                    const script_elem = document.getElementById("cky-spin-wheel-iife");
 
-                    $("#wrapper").append(htmlElement);
+                    if (script_elem == null) {
+                        const spin_wheel = document.createElement('script');
+
+                        spin_wheel.src = 'https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js';
+
+                        spin_wheel.async = false;
+
+                        spin_wheel.id = "cky-spin-wheel-iife";
+
+                        document.head.appendChild(spin_wheel);
+                    }
+
+                    $("#wrapper").append(html);
 
                     const uuid = props.uuid;
                     delete props.uuid;
