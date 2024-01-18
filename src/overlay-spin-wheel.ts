@@ -6,6 +6,7 @@ import { logger } from "./logger";
 import { webServer } from "./main";
 
 import { randomUUID } from "crypto";
+import { EventData } from "./types";
 
 const wait = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -273,24 +274,31 @@ export function overlaySpinWheelEffectType(
             const baseCanvasSize = 500;
             const arcAdjust = -90;
             const dragCapturePeriod = 250;
-            const data: any = {
+            const data: EventData = {
                 overlayInstance: event.effect.overlayInstance,
                 uuid: randomUUID(),
-                displayDuration: 5,
+                displayDuration: 30,
                 props: {
                     name: "Takeaway",
                     radius: 0.89,
+                    itemLabelFontSizeMax: baseCanvasSize,
                     pointerAngle: 90,
+                    pixelRatio: 0,
+                    rotation: 0,
+                    isInteractive: true,
+                    itemLabelBaselineOffset: 0,
                     itemLabelRadius: 0.92,
                     itemLabelRadiusMax: 0.37,
                     itemLabelRotation: 0,
                     itemLabelAlign: AlignText.right,
                     itemLabelColors: ["#000"],
-                    itemLabelBaselineOffset: -0.06,
+                    itemLabelStrokeColor: '#fff',
                     itemLabelFont: "Rubik",
                     itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
                     rotationSpeedMax: 700,
-                    rotationResistance: -110,
+                    offset: { w: 0, h: 0 },
+                    rotationResistance: -110, 
+                    borderColor: '#000',
                     lineWidth: 0,
                     overlayImage:
                         "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
@@ -343,7 +351,8 @@ export function overlaySpinWheelEffectType(
                 // @ts-ignore
                 webServer.on("overlay-event", listener);
             });
-
+            
+            // @ts-ignore
             webServer.sendToOverlay("cky-spinwheel", data);
 
             const winningSlice = await waitPromise;
@@ -368,68 +377,67 @@ export function overlaySpinWheelEffectType(
 
                     /*html*/
                     const html = `
-                    <div id={{WHEELSPINDIVID}}>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
+                                <div id={{WHEELSPINDIVID}}>
+                                    <div class="spin-wheel">
+                                        <style>
+                                            @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');
+                                            @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400&display=swap');
+                                            @import url('https://fonts.googleapis.com/css2?family=Pragati+Narrow&display=swap');
+                                            @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            font-family: 'Lucida Grande', sans-serif;
-            font-size: 15px;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            /* Prevent selecting ui text when dragging */
-        }
+                                            * {
+                                                margin: 0;
+                                                padding: 0;
+                                                font-family: 'Lucida Grande', sans-serif;
+                                                font-size: 15px;
+                                                -webkit-tap-highlight-color: transparent;
+                                                user-select: none;
+                                                /* Prevent selecting ui text when dragging */
+                                            }
 
-        .root {
-            /* Prevent pull-down-to-refresh gesture */
-            overscroll-behavior-y: contain;
-            height: 100%;
-            /* Prevent iOS rubber-band effect */
-            position: fixed;
-            width: 100%;
-            /* Prevent browser from handling touch events */
-            touch-action: none;
-            display: flex;
-            flex-direction: column;
-            justify-items: stretch;
-            align-items: stretch;
-        }
+                                            .spin-wheel {
+                                                /* Prevent pull-down-to-refresh gesture */
+                                                overscroll-behavior-y: contain;
+                                                height: 100%;
+                                                /* Prevent iOS rubber-band effect */
+                                                position: fixed;
+                                                width: 100%;
+                                                /* Prevent browser from handling touch events */
+                                                touch-action: none;
+                                                display: flex;
+                                                flex-direction: column;
+                                                justify-items: stretch;
+                                                align-items: stretch;
+                                            }
 
-        .wheel-wrapper {
-            overflow: hidden;
-            height: 100%;
-            width: 100%;
-        }
+                                            .wheel-wrapper {
+                                                overflow: hidden;
+                                                height: 100%;
+                                                width: 100%;
+                                            }
 
-        select {
-            padding: 2px;
-        }
+                                            select {
+                                                padding: 2px;
+                                            }
 
-        label {
-            margin-right: 5px;
-        }
-    </style>
-    <div class="wheel-wrapper"></div>
-</div>`;
-
-                    // script src="https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js" /script
+                                            label {
+                                                margin-right: 5px;
+                                            }
+                                        </style>
+                                        <div class="wheel-wrapper"></div>
+                                    </div>
+                                </div>`;
 
                     function loadHtmlAndExecute() {
-                        const uuid = event.uuid;
-                        const displayDuration = event.displayDuration;
+                        const { uuid, displayDuration, props } = event;
+
                         $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
                         const container = document.getElementById(uuid).getElementsByClassName("wheel-wrapper")[0];
-                        console.log(event.props)
                         // @ts-ignore
-                        window.wheel = new spinWheel.Wheel(container, event.props);
-                    
+                        window.wheel = new spinWheel.Wheel(container, props);
+
                         function fetchWinningItemIndexFromApi() {
-                            return getRandomInt(0, event.props.items.length);
+                            return getRandomInt(0, props.items.length);
                         }
                         function getRandomInt(min: number, max: number) {
                             min = Math.ceil(min);
@@ -446,10 +454,9 @@ export function overlaySpinWheelEffectType(
                         // @ts-ignore
                         wheel.onRest = (e) => {
                             // @ts-ignore
-                            sendWebsocketEvent(uuid, { "result": `"${event.props.items[e.currentIndex].label}"` });
-
+                            sendWebsocketEvent(uuid, { "result": `"${props.items[e.currentIndex].label}"` });
                             console.log(e);
-                            console.log(event.props.items[e.currentIndex].label);
+                            console.log(props.items[e.currentIndex].label);
 
                             setTimeout(() => $(`#${uuid}`).remove(), displayDuration * 1000);
                         };
