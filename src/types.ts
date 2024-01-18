@@ -50,3 +50,10 @@ export interface CkyEvent {
     displayDuration: number;
     props: Props
 }
+
+export interface EV {
+    name: string;
+    data: {
+        result: string;
+    }
+}

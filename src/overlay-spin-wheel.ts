@@ -6,7 +6,7 @@ import { logger } from "./logger";
 import { webServer } from "./main";
 
 import { randomUUID } from "crypto";
-import { EventData, CkyEvent } from "./types";
+import { EventData, CkyEvent, EV } from "./types";
 
 const wait = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -79,7 +79,7 @@ export function overlaySpinWheelEffectType(
                 <label class="control-fb control--checkbox" style="margin-top:15px"> Show Timer name
                         <input type="checkbox" ng-model="effect.timerIncludeName">
                         <div class="control__indicator"></div>
-                </label>
+                </label>        
                 <firebot-editableObjectList input-title="Title" model="effect.timerTitle" placeholder="Enter a name for the timer."></firebot-input>
                 <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
 
@@ -89,6 +89,12 @@ export function overlaySpinWheelEffectType(
                 <rzslider rz-slider-model="effect.volume" rz-slider-options="{floor: 1, ceil: 10, hideLimitLabels: true, showSelectionBar: true}"></rzslider>
                 <i class="fal fa-volume-up volume-high"></i>
             </div>
+            </eos-container>
+            <eos-container header="Choices" pad-top="true">
+                 <firebot-editable-list settings="optionSettings" model="effect.choices" />
+            </eos-container>
+            <eos-container header="Choices" pad-top="true">
+                 <firebot-editableObjectList settings="optionSettings" model="effect.choices" />
             </eos-container>
             <eos-container header="Advanced Settings" class="setting-padtop">
                 <label class="control-fb control--checkbox">Show Advanced Settings
@@ -341,8 +347,7 @@ export function overlaySpinWheelEffectType(
             };
 
             const waitPromise = new Promise<string>((resolve) => {
-                // TODO: need to be typed.
-                const listener = (ev: any) => {
+                const listener = (ev: EV) => {
                     if (ev.name !== data.uuid) return;
                     // @ts-ignore
                     webServer.off("overlay-event", listener);

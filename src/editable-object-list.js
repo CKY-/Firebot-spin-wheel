@@ -56,7 +56,7 @@ const deepmerge = require("deepmerge");
                     validationText: "Text cannot be empty",
                     noneAddedText: "None saved",
                     noDuplicates: false,
-                    maxItems: number,
+                    maxItems: undefined,
                     trigger: undefined,
                     triggerMeta: undefined
                 };
