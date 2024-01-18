@@ -6,7 +6,7 @@ import { logger } from "./logger";
 import { webServer } from "./main";
 
 import { randomUUID } from "crypto";
-import { EventData } from "./types";
+import { EventData, CkyEvent } from "./types";
 
 const wait = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -80,6 +80,7 @@ export function overlaySpinWheelEffectType(
                         <input type="checkbox" ng-model="effect.timerIncludeName">
                         <div class="control__indicator"></div>
                 </label>
+                <firebot-editableObjectList input-title="Title" model="effect.timerTitle" placeholder="Enter a name for the timer."></firebot-input>
                 <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
 
                 <firebot-input input-title="Timer Ended" model="effect.endTriggerCallUrl" placeholder="Time Up Trigger."></firebot-input>
@@ -272,8 +273,6 @@ export function overlaySpinWheelEffectType(
                 center: "center"
             });
             const baseCanvasSize = 500;
-            const arcAdjust = -90;
-            const dragCapturePeriod = 250;
             const data: EventData = {
                 overlayInstance: event.effect.overlayInstance,
                 uuid: randomUUID(),
@@ -297,13 +296,13 @@ export function overlaySpinWheelEffectType(
                     itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
                     rotationSpeedMax: 700,
                     offset: { w: 0, h: 0 },
-                    rotationResistance: -110, 
+                    rotationResistance: -110,
                     borderColor: '#000',
                     lineWidth: 0,
                     overlayImage:
                         "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
                     borderWidth: 0,
-                    // debug: true, // So we can see pointer angle.
+                    debug: false, // So we can see pointer angle.
                     items: [
                         {
                             label: "Dog",
@@ -342,6 +341,7 @@ export function overlaySpinWheelEffectType(
             };
 
             const waitPromise = new Promise<string>((resolve) => {
+                // TODO: need to be typed.
                 const listener = (ev: any) => {
                     if (ev.name !== data.uuid) return;
                     // @ts-ignore
@@ -351,7 +351,7 @@ export function overlaySpinWheelEffectType(
                 // @ts-ignore
                 webServer.on("overlay-event", listener);
             });
-            
+
             // @ts-ignore
             webServer.sendToOverlay("cky-spinwheel", data);
 
@@ -371,13 +371,12 @@ export function overlaySpinWheelEffectType(
             },
             event: {
                 name: "cky-spinwheel",
-                onOverlayEvent: (event: any) => {
+                onOverlayEvent: (event: CkyEvent) => {
                     // Frontend Code Here
                     //const html = require('./spinhtml.html');
 
-                    /*html*/
-                    const html = `
-                                <div id={{WHEELSPINDIVID}}>
+
+                    const html = /*html*/`<div id={{WHEELSPINDIVID}}>
                                     <div class="spin-wheel">
                                         <style>
                                             @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');

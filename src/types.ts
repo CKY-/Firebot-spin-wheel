@@ -22,8 +22,9 @@ interface Props {
     overlayImage: string;
     borderWidth: number;
     items: PropsItem[]
-    offset:  Offset;
+    offset: Offset;
     borderColor: string;
+    debug: boolean;
 
 }
 
@@ -42,4 +43,10 @@ export interface EventData {
     uuid: string;
     displayDuration: number
     props: Props;
+}
+
+export interface CkyEvent {
+    uuid: string;
+    displayDuration: number;
+    props: Props
 }

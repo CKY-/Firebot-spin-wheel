@@ -3,7 +3,7 @@ import { overlaySpinWheelEffectType } from "./overlay-spin-wheel";
 import { initLogger, logger } from "./logger";
 import { Request, Response } from 'express';
 import spinHtml from './spinhtml.html';
-import spinJs from './frontendJs/spin.js';
+//import spinJs from './frontendJs/spin.js';
 import { HttpServerManager } from "@crowbartools/firebot-custom-scripts-types/types/modules/http-server-manager";
 
 interface Params {
