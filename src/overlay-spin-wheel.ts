@@ -1,7 +1,7 @@
 import { Firebot, RunRequest, ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
 import { v4 } from "uuid";
 import { resolve } from "path";
-
+//import { spinWheelList } from "./gui/app/directives/controls/spin-wheel-list.js"
 import { logger } from "./logger";
 import { webServer } from "./main";
 
@@ -35,7 +35,7 @@ interface EffectModel {
     debugBorder: Boolean;
     dropShadow: Boolean;
     overlayInstance: String;
-    CkyEvent: CkyEvent;    
+    CkyEvent: CkyEvent;
     html: string;
 
 }
@@ -90,21 +90,21 @@ export function overlaySpinWheelEffectType(
             </div>
             </eos-container>
             <eos-container header="Choices" pad-top="true">
-                <div>
+                <div class="input-group">
                     <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
                         <div uib-tooltip="Click to edit" class="ml-8" style="font-weight: 400;width: 100%;" aria-label="{{item.label}}">
                             <div>
                                 <b>Label:</b><firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
                             </div> 
-                                <b>Weight:</b> {{item.weight}}
+                                <b>Weight:</b><firebot-input input-title="weight" type="number" min="1" max="10000" model="item.weight" placeholder="Enter a weight for the wheel item."></firebot-input>
                         </div>
-                        <span class="clickable" style="color: #fb7373;" ng-click="$scope.removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
+                        <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
                             <i class="fad fa-trash-alt" aria-hidden="true"></i>
                         </span>
                     </div>
                     <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
                     <div class="mx-0 mt-2.5 mb-4">
-                        <button class="filter-bar" ng-click="$scope.showAddOrEditGiftReceiverModal()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
+                        <button class="filter-bar" ng-click="addSpinWheelItem()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
                             <i class="far fa-plus"></i>
                         </button>
                     </div>
@@ -187,16 +187,35 @@ export function overlaySpinWheelEffectType(
             <div class="effect-info alert alert-warning">
                 This effect requires the Firebot overlay to be loaded in your broadcasting software.
             </div>
-            `,   
-        optionsController: ($scope) => {
+            `,
+        optionsController: ($scope: any, backendCommunicator: any, $q: any) => {
             $scope.optionSettings = {
                 noDuplicates: true,
                 maxItems: 5,
                 trigger: $scope.trigger,
                 triggerMeta: $scope.triggerMeta
             };
-        },
+
+            $scope.removeItemAtIndex = (index: number) => {
+                if (index > -1) {
+                    $scope.effect.CkyEvent.props.items.splice(index, 1);
+                }
+            }
+
+            $scope.addSpinWheelItem = () => {
+                $scope.effect.CkyEvent.props.items.push(
+                    {
+                        label: "",
+                        weight: 1
+                    }
+                )
+                console.log($scope.effect.CkyEvent.props.items)
+            }
+            $scope.addSpinWheelItem();
+        },            
+
         optionsValidator: (effect) => {
+
             let errors = [];
             if (effect.timerTitle == null || effect.timerTitle.length < 1) {
                 errors.push("Please enter name for the timer");
@@ -207,11 +226,7 @@ export function overlaySpinWheelEffectType(
             return errors;
         },
         onTriggerEvent: async (event) => {
-            function removeItemAtIndex(index:number) {
-                if (index > -1) {
-                event.effect.CkyEvent.props.items.splice(index,1);
-                }
-            }
+
             // return new Promise((resolve) => {
 
             //     const effect = event.effect;

@@ -3,7 +3,7 @@
 (function() {
     angular
         .module('firebotApp')
-        .component("giftReceiversList", {
+        .component("spinWheelList", {
             bindings: {
                 model: "=",
                 onUpdate: '&'
@@ -35,7 +35,7 @@
 
                 $ctrl.showAddOrEditGiftReceiverModal = (giftReceiver) => {
                     utilityService.showModal({
-                        component: "addOrEditGiftReceiverModal",
+                        component: "addOrEditSpinWheelItemModal",
                         size: "sm",
                         resolveObj: {
                             giftReceiver: () => giftReceiver
