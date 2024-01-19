@@ -7,27 +7,20 @@ import spinHtml from './spinhtml.html';
 import { HttpServerManager } from "@crowbartools/firebot-custom-scripts-types/types/modules/http-server-manager";
 
 interface Params {
-  message: string;
 }
 
 const script: Firebot.CustomScript<Params> = {
   getScriptManifest: () => {
     return {
-      name: "Starter Custom Script",
-      description: "A starter custom script for build",
-      author: "SomeDev",
+      name: "Spin Wheel Script",
+      description: "Spin Wheel Effect",
+      author: "CKY",
       version: "1.0",
       firebotVersion: "5",
     };
   },
   getDefaultParameters: () => {
     return {
-      message: {
-        type: "string",
-        default: "Hello World!",
-        description: "Message",
-        secondaryDescription: "Enter a message here",
-      },
     };
   },
   run: (runRequest) => {

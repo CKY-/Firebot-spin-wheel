@@ -35,6 +35,7 @@ interface EffectModel {
     debugBorder: Boolean;
     dropShadow: Boolean;
     overlayInstance: String;
+    CkyEvent: CkyEvent;    
     html: string;
 
 }
@@ -79,10 +80,8 @@ export function overlaySpinWheelEffectType(
                 <label class="control-fb control--checkbox" style="margin-top:15px"> Show Timer name
                         <input type="checkbox" ng-model="effect.timerIncludeName">
                         <div class="control__indicator"></div>
-                </label>        
-                <firebot-editableObjectList input-title="Title" model="effect.timerTitle" placeholder="Enter a name for the timer."></firebot-input>
+                </label>      
                 <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
-
                 <firebot-input input-title="Timer Ended" model="effect.endTriggerCallUrl" placeholder="Time Up Trigger."></firebot-input>
                 <div class="volume-slider-wrapper">
                 <i class="fal fa-volume-down volume-low"></i>
@@ -91,11 +90,27 @@ export function overlaySpinWheelEffectType(
             </div>
             </eos-container>
             <eos-container header="Choices" pad-top="true">
-                 <firebot-editable-list settings="optionSettings" model="effect.choices" />
+                <div>
+                    <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
+                        <div uib-tooltip="Click to edit" class="ml-8" style="font-weight: 400;width: 100%;" aria-label="{{item.label}}">
+                            <div>
+                                <b>Label:</b><firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
+                            </div> 
+                                <b>Weight:</b> {{item.weight}}
+                        </div>
+                        <span class="clickable" style="color: #fb7373;" ng-click="$scope.removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
+                            <i class="fad fa-trash-alt" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
+                    <div class="mx-0 mt-2.5 mb-4">
+                        <button class="filter-bar" ng-click="$scope.showAddOrEditGiftReceiverModal()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
+                            <i class="far fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
             </eos-container>
-            <eos-container header="Choices" pad-top="true">
-                 <firebot-editableObjectList settings="optionSettings" model="effect.choices" />
-            </eos-container>
+
             <eos-container header="Advanced Settings" class="setting-padtop">
                 <label class="control-fb control--checkbox">Show Advanced Settings
                     <input type="checkbox" ng-model="effect.isAdvancedSettings" >
@@ -172,8 +187,14 @@ export function overlaySpinWheelEffectType(
             <div class="effect-info alert alert-warning">
                 This effect requires the Firebot overlay to be loaded in your broadcasting software.
             </div>
-            `,
+            `,   
         optionsController: ($scope) => {
+            $scope.optionSettings = {
+                noDuplicates: true,
+                maxItems: 5,
+                trigger: $scope.trigger,
+                triggerMeta: $scope.triggerMeta
+            };
         },
         optionsValidator: (effect) => {
             let errors = [];
@@ -186,6 +207,11 @@ export function overlaySpinWheelEffectType(
             return errors;
         },
         onTriggerEvent: async (event) => {
+            function removeItemAtIndex(index:number) {
+                if (index > -1) {
+                event.effect.CkyEvent.props.items.splice(index,1);
+                }
+            }
             // return new Promise((resolve) => {
 
             //     const effect = event.effect;
@@ -305,8 +331,7 @@ export function overlaySpinWheelEffectType(
                     rotationResistance: -110,
                     borderColor: '#000',
                     lineWidth: 0,
-                    overlayImage:
-                        "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
+                    overlayImage: "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
                     borderWidth: 0,
                     debug: false, // So we can see pointer angle.
                     items: [
@@ -471,7 +496,7 @@ export function overlaySpinWheelEffectType(
                     if (script_elem == null) {
                         const spin_wheel = document.createElement('script');
 
-                        spin_wheel.src = 'https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js';
+                        spin_wheel.src = 'https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png';
 
                         spin_wheel.async = false;
 
