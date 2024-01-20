@@ -90,23 +90,15 @@ export function overlaySpinWheelEffectType(
             </div>
             </eos-container>
 
-        <eosCollapsablePanel header="Choices" pad-top="true">
+        <eos-collapsable-panel header="Choices" pad-top="true">
             <eosOverlayInstance settings="optionSettings" model="effect.choices" />
-        </eosCollapsablePanel>
+        </eos-collapsable-panel>
 
             <eos-container header="Choices" pad-top="true">
                 <div class="input-group" style="width: 100%;">
                     <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
-                        <div uib-tooltip="Click to edit" class="ml-8" style="font-weight: 400;width: 100%;" aria-label="{{item.label}}">
-                            <div>
-                                <firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
-                            </div>
-                                <input
-                            class="form-control"
-                            type="number"
-                            min="1" max="10000"
-                            ng-model="item.weight">
-                        </div>
+                                <firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item.">
+                                <input class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
                         <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
                             <i class="fad fa-trash-alt" aria-hidden="true"></i>
                         </span>
