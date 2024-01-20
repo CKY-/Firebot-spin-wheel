@@ -89,14 +89,23 @@ export function overlaySpinWheelEffectType(
                 <i class="fal fa-volume-up volume-high"></i>
             </div>
             </eos-container>
+
+        <eosCollapsablePanel header="Choices" pad-top="true">
+            <eosOverlayInstance settings="optionSettings" model="effect.choices" />
+        </eosCollapsablePanel>
+
             <eos-container header="Choices" pad-top="true">
-                <div class="input-group">
+                <div class="input-group" style="width: 100%;">
                     <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
                         <div uib-tooltip="Click to edit" class="ml-8" style="font-weight: 400;width: 100%;" aria-label="{{item.label}}">
                             <div>
-                                <b>Label:</b><firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
-                            </div> 
-                                <b>Weight:</b><firebot-input input-title="weight" type="number" min="1" max="10000" model="item.weight" placeholder="Enter a weight for the wheel item."></firebot-input>
+                                <firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
+                            </div>
+                                <input
+                            class="form-control"
+                            type="number"
+                            min="1" max="10000"
+                            ng-model="item.weight">
                         </div>
                         <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
                             <i class="fad fa-trash-alt" aria-hidden="true"></i>
@@ -195,7 +204,9 @@ export function overlaySpinWheelEffectType(
                 trigger: $scope.trigger,
                 triggerMeta: $scope.triggerMeta
             };
-
+            $scope.effect.CkyEvent={};
+            $scope.effect.CkyEvent.props={};
+            $scope.effect.CkyEvent.props.items=[];
             $scope.removeItemAtIndex = (index: number) => {
                 if (index > -1) {
                     $scope.effect.CkyEvent.props.items.splice(index, 1);
@@ -211,7 +222,7 @@ export function overlaySpinWheelEffectType(
                 )
                 console.log($scope.effect.CkyEvent.props.items)
             }
-            $scope.addSpinWheelItem();
+            //$scope.addSpinWheelItem();
         },            
 
         optionsValidator: (effect) => {
