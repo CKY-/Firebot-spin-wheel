@@ -93,24 +93,28 @@ export function overlaySpinWheelEffectType(
         <eos-collapsable-panel header="Choices" pad-top="true">
             <eosOverlayInstance settings="optionSettings" model="effect.choices" />
         </eos-collapsable-panel>
-
-            <eos-container header="Choices" pad-top="true">
-                <div class="input-group" style="width: 100%;">
-                    <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
-                                <firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item.">
-                                <input class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
-                        <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
-                            <i class="fad fa-trash-alt" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
-                    <div class="mx-0 mt-2.5 mb-4">
-                        <button class="filter-bar" ng-click="addSpinWheelItem()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
-                            <i class="far fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-            </eos-container>
+        
+        <eos-container header="Choices" pad-top="true">
+          <div class="input-group" style="width: 100%;">
+            <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
+              <div class="item" style="margin-bottom: 10px;">
+                  <div style="margin-bottom: 10px;">
+                  <firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
+                  </div>
+                  <input input-title="label" class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
+                  <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
+                    <i class="fad fa-trash-alt" aria-hidden="true"></i>
+                  </span>
+              </div>
+            </div>
+            <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
+            <div class="mx-0 mt-2.5 mb-4">
+              <button class="filter-bar" ng-click="addSpinWheelItem()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
+                <i class="far fa-plus"></i>
+              </button>
+            </div>
+          </div>
+        </eos-container>
 
             <eos-container header="Advanced Settings" class="setting-padtop">
                 <label class="control-fb control--checkbox">Show Advanced Settings
