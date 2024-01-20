@@ -75,36 +75,38 @@ export function overlaySpinWheelEffectType(
             },
         },
         optionsTemplate: `
-            <eos-container header="Timer Name">
-                <firebot-input input-title="Title" model="effect.timerTitle" placeholder="Enter a name for the timer."></firebot-input>
-                <label class="control-fb control--checkbox" style="margin-top:15px"> Show Timer name
-                        <input type="checkbox" ng-model="effect.timerIncludeName">
-                        <div class="control__indicator"></div>
-                </label>      
-                <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
-                <firebot-input input-title="Timer Ended" model="effect.endTriggerCallUrl" placeholder="Time Up Trigger."></firebot-input>
-                <div class="volume-slider-wrapper">
-                <i class="fal fa-volume-down volume-low"></i>
-                <rzslider rz-slider-model="effect.volume" rz-slider-options="{floor: 1, ceil: 10, hideLimitLabels: true, showSelectionBar: true}"></rzslider>
-                <i class="fal fa-volume-up volume-high"></i>
-            </div>
-            </eos-container>
+          <eos-container header="Timer Name">
+          <firebot-input input-title="Title" model="effect.timerTitle" placeholder="Enter a name for the timer."></firebot-input>
+          <label class="control-fb control--checkbox" style="margin-top:15px"> Show Timer name
+            <input type="checkbox" ng-model="effect.timerIncludeName">
+            <div class="control__indicator"></div>
+          </label>
+          <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
+          <firebot-input input-title="Timer Ended" model="effect.endTriggerCallUrl" placeholder="Time Up Trigger."></firebot-input>
+          <div class="volume-slider-wrapper">
+            <i class="fal fa-volume-down volume-low"></i>
+            <rzslider rz-slider-model="effect.volume" rz-slider-options="{floor: 1, ceil: 10, hideLimitLabels: true, showSelectionBar: true}"></rzslider>
+            <i class="fal fa-volume-up volume-high"></i>
+          </div>
+        </eos-container>
 
         <eos-collapsable-panel header="Choices" pad-top="true">
-            <eosOverlayInstance settings="optionSettings" model="effect.choices" />
+          <eosOverlayInstance settings="optionSettings" model="effect.choices" />
         </eos-collapsable-panel>
-        
+
         <eos-container header="Choices" pad-top="true">
           <div class="input-group" style="width: 100%;">
             <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
-              <div class="item" style="margin-bottom: 10px;">
-                  <div style="margin-bottom: 10px;">
-                  <firebot-input input-title="label" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
-                  </div>
-                  <input input-title="label" class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
-                  <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
-                    <i class="fad fa-trash-alt" aria-hidden="true"></i>
-                  </span>
+              <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
+                <div>
+                    <div style="margin-bottom: 10px;">
+                      <b>Label</b>   <firebot-input model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
+                    </div>
+                      <b>Weight</b> <input class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
+                </div>
+                <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
+                  <i class="fad fa-trash-alt" aria-hidden="true"></i>
+                </span>
               </div>
             </div>
             <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
@@ -116,82 +118,74 @@ export function overlaySpinWheelEffectType(
           </div>
         </eos-container>
 
-            <eos-container header="Advanced Settings" class="setting-padtop">
-                <label class="control-fb control--checkbox">Show Advanced Settings
-                    <input type="checkbox" ng-model="effect.isAdvancedSettings" >
-                    <div class="control__indicator"></div>
-                </label>
-                <div ng-show="effect.isAdvancedSettings" class="ml-6 mb-10">
-                    <div class="input-group" style="margin-bottom: 10px;">
-                        <span class="input-group-addon">Width (in pixels)</span>
-                        <input
-                            class="form-control"
-                            type="number"
-                            min="1" max="10000"
-                            ng-model="effect.width">
-                        <span class="input-group-addon">Height (in pixels)</span>
-                        <input
-                            class="form-control"
-                            type="number"
-                            min="1" max="10000"
-                            ng-model="effect.height">
-                    </div>
-  
-                    <p>This defines the size of the (invisible) box that the above timer will be placed in.</p>
-
-                    <label class="control-fb control--checkbox"> Show Debug Border <tooltip text="'Show a red border around the timer to make it easier to see its position.'"></tooltip>
-                        <input type="checkbox" ng-model="effect.debugBorder" />
-                        <div class="control__indicator"></div>
-                    </label>
-
-                    <p>Justification</p>
-                    <label class="control-fb control--radio">Left
-                        <input type="radio" ng-model="effect.justify" value="flex-start"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                    <label class="control-fb control--radio" >Center
-                        <input type="radio" ng-model="effect.justify" value="center"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                    <label class="control-fb control--radio" >Right
-                        <input type="radio" ng-model="effect.justify" value="flex-end"/>
-                        <div class="control__indicator"></div>
-                    </label>
-
-                    <p>Align</p>
-                    <label class="control-fb control--radio">Top
-                        <input type="radio" ng-model="effect.align" value="flex-start"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                    <label class="control-fb control--radio" >Center
-                        <input type="radio" ng-model="effect.align" value="center"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                    <label class="control-fb control--radio" >Bottom
-                        <input type="radio" ng-model="effect.align" value="flex-end"/>
-                        <div class="control__indicator"></div>
-                    </label>
-                </div>
-            </eos-container>
-
-            <eos-container header="Overlay positioning" class="setting-padtop">
-                <label class="control-fb control--checkbox">Show Overlay Settings
-                    <input type="checkbox" ng-model="effect.isOverlaySettings" >
-                    <div class="control__indicator"></div>
-                </label>
-            </eos-container>
-            <div ng-show="effect.isOverlaySettings">
-
-                <eos-overlay-position effect="effect" class="setting-padtop"></eos-overlay-position>
-
-                <eos-enter-exit-animations effect="effect" class="setting-padtop"></eos-enter-exit-animations>
-
-                <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
+        <eos-container header="Advanced Settings" class="setting-padtop">
+          <label class="control-fb control--checkbox">Show Advanced Settings
+            <input type="checkbox" ng-model="effect.isAdvancedSettings">
+            <div class="control__indicator"></div>
+          </label>
+          <div ng-show="effect.isAdvancedSettings" class="ml-6 mb-10">
+            <div class="input-group" style="margin-bottom: 10px;">
+              <span class="input-group-addon">Width (in pixels)</span>
+              <input class="form-control" type="number" min="1" max="10000" ng-model="effect.width">
+              <span class="input-group-addon">Height (in pixels)</span>
+              <input class="form-control" type="number" min="1" max="10000" ng-model="effect.height">
             </div>
 
-            <div class="effect-info alert alert-warning">
-                This effect requires the Firebot overlay to be loaded in your broadcasting software.
-            </div>
+            <p>This defines the size of the (invisible) box that the above timer will be placed in.</p>
+
+            <label class="control-fb control--checkbox"> Show Debug Border <tooltip text="'Show a red border around the timer to make it easier to see its position.'"></tooltip>
+              <input type="checkbox" ng-model="effect.debugBorder" />
+              <div class="control__indicator"></div>
+            </label>
+
+            <p>Justification</p>
+            <label class="control-fb control--radio">Left
+              <input type="radio" ng-model="effect.justify" value="flex-start" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">Center
+              <input type="radio" ng-model="effect.justify" value="center" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">Right
+              <input type="radio" ng-model="effect.justify" value="flex-end" />
+              <div class="control__indicator"></div>
+            </label>
+
+            <p>Align</p>
+            <label class="control-fb control--radio">Top
+              <input type="radio" ng-model="effect.align" value="flex-start" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">Center
+              <input type="radio" ng-model="effect.align" value="center" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">Bottom
+              <input type="radio" ng-model="effect.align" value="flex-end" />
+              <div class="control__indicator"></div>
+            </label>
+          </div>
+        </eos-container>
+
+        <eos-container header="Overlay positioning" class="setting-padtop">
+          <label class="control-fb control--checkbox">Show Overlay Settings
+            <input type="checkbox" ng-model="effect.isOverlaySettings">
+            <div class="control__indicator"></div>
+          </label>
+        </eos-container>
+        <div ng-show="effect.isOverlaySettings">
+
+          <eos-overlay-position effect="effect" class="setting-padtop"></eos-overlay-position>
+
+          <eos-enter-exit-animations effect="effect" class="setting-padtop"></eos-enter-exit-animations>
+
+          <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
+        </div>
+
+        <div class="effect-info alert alert-warning">
+          This effect requires the Firebot overlay to be loaded in your broadcasting software.
+        </div>
             `,
         optionsController: ($scope: any, backendCommunicator: any, $q: any) => {
             $scope.optionSettings = {
