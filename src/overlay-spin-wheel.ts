@@ -97,13 +97,15 @@ export function overlaySpinWheelEffectType(
         <eos-container header="Choices" pad-top="true">
           <div class="input-group" style="width: 100%;">
             <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
-              <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
+              <div class="item ml-8" style="font-weight: 400;width: 75%;margin-bottom: 10px;">
                 <div>
                     <div style="margin-bottom: 10px;">
-                      <b>Label</b>   <firebot-input model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
+                      <b>Label</b><firebot-input model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
                     </div>
-                      <b>Weight</b> <input class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
+                      <b>Weight</b><input class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
                 </div>
+              </div>
+              <div class="ml-4">
                 <span class="clickable" style="color: #fb7373;" ng-click="removeItemAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
                   <i class="fad fa-trash-alt" aria-hidden="true"></i>
                 </span>
