@@ -22,7 +22,6 @@ interface Props {
     overlayImage: string;
     borderWidth: number;
     items: PropsItem[]
-    offset: Offset;
     borderColor: string;
     debug: boolean;
 

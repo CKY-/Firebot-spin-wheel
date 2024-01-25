@@ -13,10 +13,8 @@ const wait = (ms: number) => {
 };
 
 interface EffectModel {
-    timerTitle: String;
-    timerDuration: number;
+    displayDuration: number;
     endTriggerCallUrl: String;
-    timerIncludeName: Boolean;
     inbetweenAnimation: any;
     inbetweenDelay: number;
     inbetweenDuration: number;
@@ -30,8 +28,6 @@ interface EffectModel {
     duration: number;
     height: number;
     width: number;
-    justify: String;
-    align: String;
     debugBorder: Boolean;
     dropShadow: Boolean;
     overlayInstance: String;
@@ -74,35 +70,38 @@ export function overlaySpinWheelEffectType(
                 manual: true,
             },
         },
-        optionsTemplate: `
-          <eos-container header="Timer Name">
-          <firebot-input input-title="Title" model="effect.timerTitle" placeholder="Enter a name for the timer."></firebot-input>
-          <label class="control-fb control--checkbox" style="margin-top:15px"> Show Timer name
-            <input type="checkbox" ng-model="effect.timerIncludeName">
+        optionsTemplate: ` 
+        <setting-container header="Spin Wheel Settings" collapsed="true">
+          <firebot-input input-title="Name" model="effect.CkyEvent.props.name" placeholder="Enter a name for the spin Wheel."></firebot-input>
+          <label class="control-fb control--checkbox" style="margin-top:15px"> Show Debug Box's
+            <input type="checkbox" ng-model="effect.CkyEvent.props.debug">
             <div class="control__indicator"></div>
           </label>
-          <firebot-input input-title="Duration" model="effect.timerDuration" placeholder="Enter time in seconds."></firebot-input>
-          <firebot-input input-title="Timer Ended" model="effect.endTriggerCallUrl" placeholder="Time Up Trigger."></firebot-input>
-          <div class="volume-slider-wrapper">
-            <i class="fal fa-volume-down volume-low"></i>
-            <rzslider rz-slider-model="effect.volume" rz-slider-options="{floor: 1, ceil: 10, hideLimitLabels: true, showSelectionBar: true}"></rzslider>
-            <i class="fal fa-volume-up volume-high"></i>
-          </div>
-        </eos-container>
+          <firebot-input input-title="Duration" model="effect.displayDuration" placeholder="Enter time in seconds."></firebot-input>
+            <p>Align</p>
+            <label class="control-fb control--radio">Left
+              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="AlignText.left" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">Center
+              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="AlignText.center" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">Right
+              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="AlignText.right" />
+              <div class="control__indicator"></div>
+            </label>
+        </setting-container>
 
-        <eos-collapsable-panel header="Choices" pad-top="true">
-          <eosOverlayInstance settings="optionSettings" model="effect.choices" />
-        </eos-collapsable-panel>
-
-        <eos-container header="Choices" pad-top="true">
+        <setting-container header="Choices" pad-top="true"collapsed="true">
           <div class="input-group" style="width: 100%;">
             <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
-              <div class="item ml-8" style="font-weight: 400;width: 75%;margin-bottom: 10px;">
+              <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
                 <div>
-                    <div style="margin-bottom: 10px;">
-                      <b>Label</b><firebot-input model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
-                    </div>
-                      <b>Weight</b><input class="form-control" type="number" min="1" max="10000" ng-model="item.weight">
+                  <div style="margin-bottom: 10px;">
+                    <firebot-input input-title="Label:" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
+                  </div>
+                    <firebot-input input-title="Weight:" model=""item.weight" placeholder="Weight % for item."></firebot-input>
                 </div>
               </div>
               <div class="ml-4">
@@ -118,7 +117,61 @@ export function overlaySpinWheelEffectType(
               </button>
             </div>
           </div>
-        </eos-container>
+
+          <collapsable-panel header="Colors" style="padding: 15px 0px 10px 0px;">
+          <div class="input-group" style="width: 100%;padding: 15px 0px 10px 0px;">
+            <b>Item Label Colors</b>
+            <div ng-repeat="color in effect.CkyEvent.props.itemLabelColors track by $index" class="list-item">
+              <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
+                <div>
+                  <div style="margin-bottom: 10px;">
+                    <b>Item Label Color</b>
+                    <color-picker-input model="effect.CkyEvent.props.itemLabelColors[$index]" label="Label Color"></color-picker-input>
+                  </div>
+                </div>
+              </div>
+              <div class="ml-4">
+                <span class="clickable" style="color: #fb7373;" ng-click="removeItemLabelColorsAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
+                  <i class="fad fa-trash-alt" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+            <p class="muted" ng-show="effect.CkyEvent.props.itemLabelColors.length < 1">No Item Label Colors added.</p>
+            <div class="mx-0 mt-2.5 mb-4">
+              <button class="filter-bar" ng-click="addSpinWheelItemLabelColor()" uib-tooltip="Add Item Label Colors" tooltip-append-to-body="true" aria-label="Add Item Label Colors">
+                <i class="far fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="itemBackgroundColors">
+            <div class="input-group" style="width: 100%;padding: 15px 0px 10px 0px;">
+              <b>Item Background Colors</b>
+              <div ng-repeat="color in effect.CkyEvent.props.itemBackgroundColors track by $index" class="list-item">
+                <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
+                  <div>
+                    <div style="margin-bottom: 10px;">
+                      <b>Item Background Color</b>
+                      <color-picker-input model="effect.CkyEvent.props.itemBackgroundColors[$index]" label="Embed Color"></color-picker-input>
+                    </div>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <span class="clickable" style="color: #fb7373;" ng-click="removeItemBackgroundColorsAtIndex($index);$event.stopPropagation();" aria-label="Remove item">
+                    <i class="fad fa-trash-alt" aria-hidden="true"></i>
+                  </span>
+                </div>
+              </div>
+              <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
+              <div class="mx-0 mt-2.5 mb-4">
+                <button class="filter-bar" ng-click="addSpinWheelItemBackgroundColor()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
+                  <i class="far fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </collapsable-panel>
+        </setting-container>
 
         <eos-container header="Advanced Settings" class="setting-padtop">
           <label class="control-fb control--checkbox">Show Advanced Settings
@@ -140,19 +193,7 @@ export function overlaySpinWheelEffectType(
               <div class="control__indicator"></div>
             </label>
 
-            <p>Justification</p>
-            <label class="control-fb control--radio">Left
-              <input type="radio" ng-model="effect.justify" value="flex-start" />
-              <div class="control__indicator"></div>
-            </label>
-            <label class="control-fb control--radio">Center
-              <input type="radio" ng-model="effect.justify" value="center" />
-              <div class="control__indicator"></div>
-            </label>
-            <label class="control-fb control--radio">Right
-              <input type="radio" ng-model="effect.justify" value="flex-end" />
-              <div class="control__indicator"></div>
-            </label>
+
 
             <p>Align</p>
             <label class="control-fb control--radio">Top
@@ -186,22 +227,62 @@ export function overlaySpinWheelEffectType(
         </div>
 
         <div class="effect-info alert alert-warning">
-          This effect requires the Firebot overlay to be loaded in your broadcasting software.
-        </div>
+                This effect requires the Firebot overlay to be loaded in your broadcasting software. <a href ng-click="showOverlayInfoModal(effect.overlayInstance)" style="text-decoration:underline">Learn more</a>
+         </div>
+
             `,
-        optionsController: ($scope: any, backendCommunicator: any, $q: any) => {
+        optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any) => {
             $scope.optionSettings = {
                 noDuplicates: true,
                 maxItems: 5,
                 trigger: $scope.trigger,
                 triggerMeta: $scope.triggerMeta
             };
-            $scope.effect.CkyEvent={};
-            $scope.effect.CkyEvent.props={};
-            $scope.effect.CkyEvent.props.items=[];
+
+            if ($scope.effect.CkyEvent == null) {
+                $scope.effect.CkyEvent = {};
+                $scope.effect.CkyEvent.props = {};
+                $scope.effect.CkyEvent.props.items = [];
+                $scope.effect.CkyEvent.props.itemBackgroundColors = ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"];
+                $scope.effect.CkyEvent.props.itemLabelColors = ["#000"];
+                $scope.effect.CkyEvent.props.radius = 0.89;
+                $scope.effect.CkyEvent.props.itemLabelFontSizeMax = 500;
+                $scope.effect.CkyEvent.props.pointerAngle = 90;
+                $scope.effect.CkyEvent.props.pixelRatio = 0;
+                $scope.effect.CkyEvent.props.rotation = 0;
+                $scope.effect.CkyEvent.props.isInteractive = true;
+                $scope.effect.CkyEvent.props.itemLabelBaselineOffset = 0;
+                $scope.effect.CkyEvent.props.itemLabelRadius = 0.92;
+                $scope.effect.CkyEvent.props.itemLabelRadiusMax = 0.37;
+                $scope.effect.CkyEvent.props.itemLabelRotation = 0;
+                $scope.effect.CkyEvent.props.itemLabelStrokeColor = '#fff';
+                $scope.effect.CkyEvent.props.itemLabelFont = "Rubik";
+                $scope.effect.CkyEvent.props.rotationSpeedMax = 700;
+                $scope.effect.CkyEvent.props.rotationResistance = -110;
+                $scope.effect.CkyEvent.props.borderColor = '#000';
+                $scope.effect.CkyEvent.props.lineWidth = 0;
+                $scope.effect.CkyEvent.props.overlayImage = "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png";
+                $scope.effect.CkyEvent.props.borderWidth = 0;
+            }
+
+            $scope.showOverlayInfoModal = function (overlayInstance: string) {
+                utilityService.showOverlayInfoModal(overlayInstance);
+            };
             $scope.removeItemAtIndex = (index: number) => {
                 if (index > -1) {
                     $scope.effect.CkyEvent.props.items.splice(index, 1);
+                }
+            }
+
+            $scope.removeItemBackgroundColorsAtIndex = (index: number) => {
+                if (index > -1) {
+                    $scope.effect.CkyEvent.props.itemBackgroundColors.splice(index, 1);
+                }
+            }
+
+            $scope.removeItemLabelColorsAtIndex = (index: number) => {
+                if (index > -1) {
+                    $scope.effect.CkyEvent.props.itemLabelColors.splice(index, 1);
                 }
             }
 
@@ -214,16 +295,23 @@ export function overlaySpinWheelEffectType(
                 )
                 console.log($scope.effect.CkyEvent.props.items)
             }
+
+            $scope.addSpinWheelItemLabelColor = () => {
+                $scope.effect.CkyEvent.props.itemLabelColors.push("#000")
+                console.log($scope.effect.CkyEvent.props.itemLabelColors)
+            }
+
+            $scope.addSpinWheelItemBackgroundColor = () => {
+                $scope.effect.CkyEvent.props.itemBackgroundColors.push("#fff")
+                console.log($scope.effect.CkyEvent.props.itemBackgroundColors)
+            }
             //$scope.addSpinWheelItem();
-        },            
+        },
 
         optionsValidator: (effect) => {
 
             let errors = [];
-            if (effect.timerTitle == null || effect.timerTitle.length < 1) {
-                errors.push("Please enter name for the timer");
-            }
-            if (effect.timerDuration == null) {
+            if (effect.displayDuration == null) {
                 errors.push("Please enter a value for the timer");
             }
             return errors;
@@ -322,71 +410,70 @@ export function overlaySpinWheelEffectType(
                 right: "right",
                 center: "center"
             });
-            const baseCanvasSize = 500;
             const data: EventData = {
                 overlayInstance: event.effect.overlayInstance,
                 uuid: randomUUID(),
                 displayDuration: 30,
-                props: {
-                    name: "Takeaway",
-                    radius: 0.89,
-                    itemLabelFontSizeMax: baseCanvasSize,
-                    pointerAngle: 90,
-                    pixelRatio: 0,
-                    rotation: 0,
-                    isInteractive: true,
-                    itemLabelBaselineOffset: 0,
-                    itemLabelRadius: 0.92,
-                    itemLabelRadiusMax: 0.37,
-                    itemLabelRotation: 0,
-                    itemLabelAlign: AlignText.right,
-                    itemLabelColors: ["#000"],
-                    itemLabelStrokeColor: '#fff',
-                    itemLabelFont: "Rubik",
-                    itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
-                    rotationSpeedMax: 700,
-                    offset: { w: 0, h: 0 },
-                    rotationResistance: -110,
-                    borderColor: '#000',
-                    lineWidth: 0,
-                    overlayImage: "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
-                    borderWidth: 0,
-                    debug: false, // So we can see pointer angle.
-                    items: [
-                        {
-                            label: "Dog",
-                            weight: 6
-                        },
-                        {
-                            label: "Cat",
-                            weight: 4.9
-                        },
-                        {
-                            label: "Fish",
-                            weight: 4.1
-                        },
-                        {
-                            label: "Rabbit",
-                            weight: 3.7
-                        },
-                        {
-                            label: "Bird",
-                            weight: 3
-                        },
-                        {
-                            label: "Chicken",
-                            weight: 2.8
-                        },
-                        {
-                            label: "Lizard",
-                            weight: 2.5
-                        },
-                        {
-                            label: "Turtle",
-                            weight: 1
-                        }
-                    ]
-                }
+                props: event.effect.CkyEvent.props
+                // {
+                //     name: "Takeaway",
+                //     radius: 0.89,
+                //     itemLabelFontSizeMax: 500,
+                //     pointerAngle: 90,
+                //     pixelRatio: 0,
+                //     rotation: 0,
+                //     isInteractive: true,
+                //     itemLabelBaselineOffset: 0,
+                //     itemLabelRadius: 0.92,
+                //     itemLabelRadiusMax: 0.37,
+                //     itemLabelRotation: 0,
+                //     itemLabelAlign: AlignText.right,
+                //     itemLabelColors: ["#000"],
+                //     itemLabelStrokeColor: '#fff',
+                //     itemLabelFont: "Rubik",
+                //     itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
+                //     rotationSpeedMax: 700,
+                //     rotationResistance: -110,
+                //     borderColor: '#000',
+                //     lineWidth: 0,
+                //     overlayImage: "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
+                //     borderWidth: 0,
+                //     debug: false, // So we can see pointer angle.
+                //     items: [
+                //         {
+                //             label: "Dog",
+                //             weight: 6
+                //         },
+                //         {
+                //             label: "Cat",
+                //             weight: 4.9
+                //         },
+                //         {
+                //             label: "Fish",
+                //             weight: 4.1
+                //         },
+                //         {
+                //             label: "Rabbit",
+                //             weight: 3.7
+                //         },
+                //         {
+                //             label: "Bird",
+                //             weight: 3
+                //         },
+                //         {
+                //             label: "Chicken",
+                //             weight: 2.8
+                //         },
+                //         {
+                //             label: "Lizard",
+                //             weight: 2.5
+                //         },
+                //         {
+                //             label: "Turtle",
+                //             weight: 1
+                //         }
+                //     ]
+                // }
             };
 
             const waitPromise = new Promise<string>((resolve) => {
@@ -514,7 +601,7 @@ export function overlaySpinWheelEffectType(
                     if (script_elem == null) {
                         const spin_wheel = document.createElement('script');
 
-                        spin_wheel.src = 'https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png';
+                        spin_wheel.src = 'https://cdn.jsdelivr.net/npm/spin-wheel@4.3.1/dist/spin-wheel-iife.js';
 
                         spin_wheel.async = false;
 
