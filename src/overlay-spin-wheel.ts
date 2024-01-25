@@ -8,31 +8,35 @@ import { webServer } from "./main";
 import { randomUUID } from "crypto";
 import { EventData, CkyEvent, EV } from "./types";
 
+const fs = require("fs");
 const wait = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 interface EffectModel {
     displayDuration: number;
-    endTriggerCallUrl: String;
-    inbetweenAnimation: any;
-    inbetweenDelay: number;
-    inbetweenDuration: number;
-    inbetweenRepeat: any;
-    enterAnimation: any;
-    enterDuration: number;
-    exitAnimation: any;
-    exitDuration: number;
-    customCoords: any;
-    position: any;
-    duration: number;
-    height: number;
-    width: number;
-    debugBorder: Boolean;
-    dropShadow: Boolean;
-    overlayInstance: String;
+    // endTriggerCallUrl: String;
+    // inbetweenAnimation: any;
+    // inbetweenDelay: number;
+    // inbetweenDuration: number;
+    // inbetweenRepeat: any;
+    // enterAnimation: any;
+    // enterDuration: number;
+    // exitAnimation: any;
+    // exitDuration: number;
+    // customCoords: any;
+    // position: any;
+    // duration: number;
+    // height: number;
+    // width: number;
+    // debugBorder: Boolean;
+    // dropShadow: Boolean;
+    overlayInstance: string;
     CkyEvent: CkyEvent;
-    html: string;
+    fileOrList: string;
+    filePath: string
+    //html: string;
+
 
 }
 
@@ -78,22 +82,33 @@ export function overlaySpinWheelEffectType(
             <div class="control__indicator"></div>
           </label>
           <firebot-input input-title="Duration" model="effect.displayDuration" placeholder="Enter time in seconds."></firebot-input>
+          <!--
             <p>Align</p>
             <label class="control-fb control--radio">Left
-              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="AlignText.left" />
+              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="left" />
               <div class="control__indicator"></div>
             </label>
             <label class="control-fb control--radio">Center
-              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="AlignText.center" />
+              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="center" />
               <div class="control__indicator"></div>
             </label>
             <label class="control-fb control--radio">Right
-              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="AlignText.right" />
+              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="right" />
+              <div class="control__indicator"></div>
+            </label>
+            -->
+            <p>file or list</p>
+            <label class="control-fb control--radio">file
+              <input type="radio" ng-model="effect.fileOrList" value="file" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">list
+              <input type="radio" ng-model="effect.fileOrList" value="list" />
               <div class="control__indicator"></div>
             </label>
         </setting-container>
 
-        <setting-container header="Choices" pad-top="true"collapsed="true">
+        <setting-container header="Choices" pad-top="true"collapsed="true" ng-if="effect.fileOrList === 'list'">
           <div class="input-group" style="width: 100%;">
             <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
               <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
@@ -101,7 +116,7 @@ export function overlaySpinWheelEffectType(
                   <div style="margin-bottom: 10px;">
                     <firebot-input input-title="Label:" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
                   </div>
-                    <firebot-input input-title="Weight:" model=""item.weight" placeholder="Weight % for item."></firebot-input>
+                    <firebot-input input-title="Weight:" model="item.weight" placeholder="Weight % for item."></firebot-input>
                 </div>
               </div>
               <div class="ml-4">
@@ -117,8 +132,26 @@ export function overlaySpinWheelEffectType(
               </button>
             </div>
           </div>
+        </setting-container>
 
-          <collapsable-panel header="Colors" style="padding: 15px 0px 10px 0px;">
+        <setting-container header="File" pad-top="true"collapsed="true" ng-if="effect.fileOrList === 'file'">
+          <file-chooser model="effect.filePath" options="{ filters: [ {name:'Text',extensions:['txt']} ]}"></file-chooser>
+          <div class="effect-info alert alert-warning">
+                Here is a file template:
+               <br>[
+               <br>    {
+               <br>       "label":"text1",
+               <br>       "weight": 2.8
+               <br>     },
+               <br>     {
+               <br>       "label":"text1",
+               <br>       "weight": 1.5
+               <br>     }
+               <br>]
+        </div>
+        </setting-container>
+
+          <setting-container header="Colors" pad-top="true"collapsed="true">
           <div class="input-group" style="width: 100%;padding: 15px 0px 10px 0px;">
             <b>Item Label Colors</b>
             <div ng-repeat="color in effect.CkyEvent.props.itemLabelColors track by $index" class="list-item">
@@ -170,9 +203,10 @@ export function overlaySpinWheelEffectType(
               </div>
             </div>
           </div>
-        </collapsable-panel>
         </setting-container>
 
+
+    <!--
         <eos-container header="Advanced Settings" class="setting-padtop">
           <label class="control-fb control--checkbox">Show Advanced Settings
             <input type="checkbox" ng-model="effect.isAdvancedSettings">
@@ -192,8 +226,6 @@ export function overlaySpinWheelEffectType(
               <input type="checkbox" ng-model="effect.debugBorder" />
               <div class="control__indicator"></div>
             </label>
-
-
 
             <p>Align</p>
             <label class="control-fb control--radio">Top
@@ -225,10 +257,13 @@ export function overlaySpinWheelEffectType(
 
           <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
         </div>
-
+    -->
+        <eos-container header="Overlay" class="setting-padtop">
+        <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
         <div class="effect-info alert alert-warning">
                 This effect requires the Firebot overlay to be loaded in your broadcasting software. <a href ng-click="showOverlayInfoModal(effect.overlayInstance)" style="text-decoration:underline">Learn more</a>
-         </div>
+        </div>
+        </eos-container>
 
             `,
         optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any) => {
@@ -261,8 +296,16 @@ export function overlaySpinWheelEffectType(
                 $scope.effect.CkyEvent.props.rotationResistance = -110;
                 $scope.effect.CkyEvent.props.borderColor = '#000';
                 $scope.effect.CkyEvent.props.lineWidth = 0;
-                $scope.effect.CkyEvent.props.overlayImage = "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png";
+                $scope.effect.CkyEvent.props.overlayImage = `https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png`;
                 $scope.effect.CkyEvent.props.borderWidth = 0;
+            }
+
+            if ($scope.effect.CkyEvent.props.itemLabelAlign == null) {
+                $scope.effect.CkyEvent.props.itemLabelAlign = "right";
+            }
+
+            if ($scope.effect.fileOrList == null) {
+                $scope.effect.fileOrList = "file";
             }
 
             $scope.showOverlayInfoModal = function (overlayInstance: string) {
@@ -405,15 +448,20 @@ export function overlaySpinWheelEffectType(
             //     return true;
 
             // });
-            const AlignText = Object.freeze({
-                left: "left",
-                right: "right",
-                center: "center"
-            });
+            if (event.effect.fileOrList == "file") {
+                let contents: string;
+                try {
+                    contents = fs.readFileSync(event.effect.filePath, { encoding: "utf8" });
+                } catch (err) {
+                    logger.error("error reading file", err);
+                }
+                event.effect.CkyEvent.props.items = JSON.parse(contents);
+            }
+
             const data: EventData = {
                 overlayInstance: event.effect.overlayInstance,
                 uuid: randomUUID(),
-                displayDuration: 30,
+                displayDuration: event.effect.displayDuration,
                 props: event.effect.CkyEvent.props
                 // {
                 //     name: "Takeaway",
@@ -475,6 +523,11 @@ export function overlaySpinWheelEffectType(
                 //     ]
                 // }
             };
+
+            data.props.items.forEach((item) => {
+                // @ts-ignore
+                item.weight = parseFloat(item.weight) || 1;
+            });
 
             const waitPromise = new Promise<string>((resolve) => {
                 const listener = (ev: EV) => {

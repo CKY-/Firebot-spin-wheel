@@ -27,11 +27,6 @@ interface Props {
 
 }
 
-export interface Offset {
-    w: number;
-    h: number
-}
-
 export interface PropsItem {
     label: string;
     weight: number;
