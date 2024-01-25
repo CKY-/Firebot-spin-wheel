@@ -1,8 +1,8 @@
 {
   "name": "firebot-custom-script-spinwheel",
   "scriptOutputName": "SpinWheel",
-  "version": "1.0.0",
-  "description": "A starter Firebot custom script",
+  "version": "1.0.1",
+  "description": "A spin wheel for the overlay",
   "main": "",
   "scripts": {
     "build": "webpack",
@@ -10,7 +10,7 @@
     "copy": "node ./scripts/copy-build.js",
     "test": "jest"
   },
-  "author": "ebiggz",
+  "author": "CKY",
   "license": "GNU3",
   "devDependencies": {
     "@crowbartools/firebot-custom-scripts-types": "^5.60.1",
