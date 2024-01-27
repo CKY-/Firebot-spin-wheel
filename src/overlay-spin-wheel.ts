@@ -46,6 +46,7 @@ interface EffectModel {
 export function overlaySpinWheelEffectType(
     request: any,
     frontendCommunicator: ScriptModules["frontendCommunicator"],
+    resourceTokenManager: ScriptModules["resourceTokenManager"],
     runRequest: any
 ) {
     const overlaySpinWheelEffectType: Firebot.EffectType<EffectModel> = {
@@ -91,22 +92,18 @@ export function overlaySpinWheelEffectType(
               <img ng-hide="showImage" src="{{placeHolderUrl}}" style="height: 100px;width: 175px;object-fit: scale-down;background: #d7d7d7">
             </div>
             <div class="controls-fb-inline" style="padding-bottom: 5px;">
-                      <!--
               <label class="control-fb control--radio">Local file
                 <input type="radio" ng-model="effect.imageType" value="local" ng-change="imageTypeUpdated()" />
                 <div class="control__indicator"></div>
               </label>
-              -->
               <label class="control-fb control--radio">URL
                 <input type="radio" ng-model="effect.imageType" value="url" ng-change="imageTypeUpdated()" />
                 <div class="control__indicator"></div>
               </label>
-                        <!--
               <label class="control-fb control--radio">Random from folder
                 <input type="radio" ng-model="effect.imageType" value="folderRandom" ng-change="imageTypeUpdated()" />
                 <div class="control__indicator"></div>
               </label>
-              -->
             </div>
             <div ng-if="effect.imageType === 'folderRandom'" style="display: flex;flex-direction: row;align-items: center;">
               <file-chooser model="effect.imageFolder" options="{ directoryOnly: true, filters: [], title: 'Select Image Folder'}"></file-chooser>
@@ -617,7 +614,7 @@ export function overlaySpinWheelEffectType(
             }
 
             if (event.effect.imageType === "local") {
-                @ts-ignore
+
                 const resourceToken = resourceTokenManager.storeResourcePath(
                     event.effect.imageFile,
                     event.effect.displayDuration
@@ -627,25 +624,24 @@ export function overlaySpinWheelEffectType(
 
             if (event.effect.imageType === "folderRandom") {
 
-                // let files = [];
-                // try {
-                //     files = await fs.readdir(event.effect.imageFolder);
-                // } catch (err) {
-                //     logger.warn("Unable to read image folder", err);
-                // }
-                // // @ts-ignore
-                // const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
+                let files = [];
+                try {
+                    files = await fs.readdir(event.effect.imageFolder);
+                } catch (err) {
+                    logger.warn("Unable to read image folder", err);
+                }
+                // @ts-ignore
+                const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
 
-                // const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
+                const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
 
-                // const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
-                // // @ts-ignore
-                // const resourceToken = resourceTokenManager.storeResourcePath(
-                //     fullFilePath,
-                //     event.effect.displayDuration
-                // );
+                const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
+                const resourceToken = resourceTokenManager.storeResourcePath(
+                    fullFilePath,
+                    event.effect.displayDuration
+                );
 
-                // data.resourceToken = resourceToken;
+                data.resourceToken = resourceToken;
             }
 
 

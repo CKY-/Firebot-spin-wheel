@@ -24,7 +24,7 @@ const script: Firebot.CustomScript<Params> = {
     };
   },
   run: (runRequest) => {
-    const { effectManager, frontendCommunicator, httpServer } = runRequest.modules;
+    const { effectManager, frontendCommunicator,resourceTokenManager, httpServer } = runRequest.modules;
     webServer = httpServer;
 
     initLogger(runRequest.modules.logger);
@@ -33,7 +33,7 @@ const script: Firebot.CustomScript<Params> = {
     // const { logger } = runRequest.modules;
     const request = (runRequest.modules as any).request;
     effectManager.registerEffect(
-      overlaySpinWheelEffectType(request, frontendCommunicator, runRequest)
+      overlaySpinWheelEffectType(request, frontendCommunicator, resourceTokenManager, runRequest)
     );
   },
 };
