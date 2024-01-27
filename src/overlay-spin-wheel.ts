@@ -1,12 +1,12 @@
-import { Firebot, RunRequest, ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
+import { Firebot, RunRequest, ScriptModules} from "@crowbartools/firebot-custom-scripts-types";
 import { v4 } from "uuid";
-import { resolve } from "path";
+import path, { resolve } from "path";
 //import { spinWheelList } from "./gui/app/directives/controls/spin-wheel-list.js"
 import { logger } from "./logger";
 import { webServer } from "./main";
-
 import { randomUUID } from "crypto";
-import { EventData, CkyEvent, EV } from "./types";
+import { EventData, EV } from "./types";
+//import { cubicOut, cubicInOut, bounceOut, elasticInOut, sinInOut, } from "./easing";
 
 const fs = require("fs");
 const wait = (ms: number) => {
@@ -32,12 +32,15 @@ interface EffectModel {
     // debugBorder: Boolean;
     // dropShadow: Boolean;
     overlayInstance: string;
-    CkyEvent: CkyEvent;
+    EventData: EventData;
     fileOrList: string;
-    filePath: string
+    filePath: string;
+    imageType: string;
+    imageUrl:string;
+    imageFile: string;
+    imageFolder: string;
+    resourceToken: string | number | boolean;
     //html: string;
-
-
 }
 
 export function overlaySpinWheelEffectType(
@@ -75,48 +78,89 @@ export function overlaySpinWheelEffectType(
             },
         },
         optionsTemplate: ` 
+
         <setting-container header="Spin Wheel Settings" collapsed="true">
-          <firebot-input input-title="Name" model="effect.CkyEvent.props.name" placeholder="Enter a name for the spin Wheel."></firebot-input>
+          <firebot-input input-title="Name" model="effect.EventData.props.name" placeholder="Enter a name for the spin Wheel."></firebot-input>
+
+          <div class="effect-specific-title setting-padtop">
+            <h4>Image</h4>
+          </div>
+          <div class="effect-setting-content">
+            <div style="padding-bottom: 10px;width: 100%;" ng-hide="effect.imageType === 'folderRandom'">
+              <img ng-show="showImage" ng-src="{{getImagePreviewSrc()}}" imageonload="imageLoaded" style="height: 100px;width: 175px;object-fit: scale-down;background: #d7d7d7">
+              <img ng-hide="showImage" src="{{placeHolderUrl}}" style="height: 100px;width: 175px;object-fit: scale-down;background: #d7d7d7">
+            </div>
+            <div class="controls-fb-inline" style="padding-bottom: 5px;">
+                      <!--
+              <label class="control-fb control--radio">Local file
+                <input type="radio" ng-model="effect.imageType" value="local" ng-change="imageTypeUpdated()" />
+                <div class="control__indicator"></div>
+              </label>
+              -->
+              <label class="control-fb control--radio">URL
+                <input type="radio" ng-model="effect.imageType" value="url" ng-change="imageTypeUpdated()" />
+                <div class="control__indicator"></div>
+              </label>
+                        <!--
+              <label class="control-fb control--radio">Random from folder
+                <input type="radio" ng-model="effect.imageType" value="folderRandom" ng-change="imageTypeUpdated()" />
+                <div class="control__indicator"></div>
+              </label>
+              -->
+            </div>
+            <div ng-if="effect.imageType === 'folderRandom'" style="display: flex;flex-direction: row;align-items: center;">
+              <file-chooser model="effect.imageFolder" options="{ directoryOnly: true, filters: [], title: 'Select Image Folder'}"></file-chooser>
+            </div>
+            <div ng-if="effect.imageType === 'local'" style="display: flex;flex-direction: row;align-items: center;">
+              <file-chooser model="effect.imageFile" options="{ filters: [ {name: 'Image', extensions: ['svg', 'jpg', 'gif', 'png', 'jpeg']} ]}"></file-chooser>
+            </div>
+            <div ng-if="effect.imageType === 'url'">
+              <input type="text" class="form-control" ng-model="effect.imageUrl" placeholder="Enter url" replace-variables>
+            </div>
+          </div>
+
+
+
           <label class="control-fb control--checkbox" style="margin-top:15px"> Show Debug Box's
-            <input type="checkbox" ng-model="effect.CkyEvent.props.debug">
+            <input type="checkbox" ng-model="effect.EventData.props.debug">
             <div class="control__indicator"></div>
           </label>
           <firebot-input input-title="Duration" model="effect.displayDuration" placeholder="Enter time in seconds."></firebot-input>
           <!--
             <p>Align</p>
             <label class="control-fb control--radio">Left
-              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="left" />
+              <input type="radio" ng-model="effect.EventData.props.itemLabelAlign" value="left" />
               <div class="control__indicator"></div>
             </label>
             <label class="control-fb control--radio">Center
-              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="center" />
+              <input type="radio" ng-model="effect.EventData.props.itemLabelAlign" value="center" />
               <div class="control__indicator"></div>
             </label>
             <label class="control-fb control--radio">Right
-              <input type="radio" ng-model="effect.CkyEvent.props.itemLabelAlign" value="right" />
+              <input type="radio" ng-model="effect.EventData.props.itemLabelAlign" value="right" />
               <div class="control__indicator"></div>
             </label>
             -->
-            <p>file or list</p>
-            <label class="control-fb control--radio">file
-              <input type="radio" ng-model="effect.fileOrList" value="file" />
-              <div class="control__indicator"></div>
-            </label>
-            <label class="control-fb control--radio">list
-              <input type="radio" ng-model="effect.fileOrList" value="list" />
-              <div class="control__indicator"></div>
-            </label>
+          <p>file or list</p>
+          <label class="control-fb control--radio">file
+            <input type="radio" ng-model="effect.fileOrList" value="file" />
+            <div class="control__indicator"></div>
+          </label>
+          <label class="control-fb control--radio">list
+            <input type="radio" ng-model="effect.fileOrList" value="list" />
+            <div class="control__indicator"></div>
+          </label>
         </setting-container>
 
-        <setting-container header="Choices" pad-top="true"collapsed="true" ng-if="effect.fileOrList === 'list'">
+        <setting-container header="Choices" pad-top="true" collapsed="true" ng-if="effect.fileOrList === 'list'">
           <div class="input-group" style="width: 100%;">
-            <div ng-repeat="item in effect.CkyEvent.props.items track by $index" class="list-item">
+            <div ng-repeat="item in effect.EventData.props.items track by $index" class="list-item">
               <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
                 <div>
                   <div style="margin-bottom: 10px;">
                     <firebot-input input-title="Label:" model="item.label" placeholder="Enter a name for the wheel item."></firebot-input>
                   </div>
-                    <firebot-input input-title="Weight:" model="item.weight" placeholder="Weight % for item."></firebot-input>
+                  <firebot-input input-title="Weight:" model="item.weight" placeholder="Weight % for item."></firebot-input>
                 </div>
               </div>
               <div class="ml-4">
@@ -125,7 +169,7 @@ export function overlaySpinWheelEffectType(
                 </span>
               </div>
             </div>
-            <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
+            <p class="muted" ng-show="effect.EventData.props.items.length < 1">No items added.</p>
             <div class="mx-0 mt-2.5 mb-4">
               <button class="filter-bar" ng-click="addSpinWheelItem()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
                 <i class="far fa-plus"></i>
@@ -134,32 +178,33 @@ export function overlaySpinWheelEffectType(
           </div>
         </setting-container>
 
-        <setting-container header="File" pad-top="true"collapsed="true" ng-if="effect.fileOrList === 'file'">
+        <setting-container header="File" pad-top="true" collapsed="true" ng-if="effect.fileOrList === 'file'">
           <file-chooser model="effect.filePath" options="{ filters: [ {name:'Text',extensions:['txt']} ]}"></file-chooser>
           <div class="effect-info alert alert-warning">
-                Here is a file template:
-               <br>[
-               <br>    {
-               <br>       "label":"text1",
-               <br>       "weight": 2.8
-               <br>     },
-               <br>     {
-               <br>       "label":"text1",
-               <br>       "weight": 1.5
-               <br>     }
-               <br>]
-        </div>
+            "weight" is optional
+            Here is a file template:
+            <br>[
+            <br> {
+            <br> "label":"text1",
+            <br> "weight": 2.8
+            <br> },
+            <br> {
+            <br> "label":"text1",
+            <br> "weight": 1.5
+            <br> }
+            <br>]
+          </div>
         </setting-container>
 
-          <setting-container header="Colors" pad-top="true"collapsed="true">
+        <setting-container header="Colors" pad-top="true" collapsed="true">
           <div class="input-group" style="width: 100%;padding: 15px 0px 10px 0px;">
             <b>Item Label Colors</b>
-            <div ng-repeat="color in effect.CkyEvent.props.itemLabelColors track by $index" class="list-item">
+            <div ng-repeat="color in effect.EventData.props.itemLabelColors track by $index" class="list-item">
               <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
                 <div>
                   <div style="margin-bottom: 10px;">
                     <b>Item Label Color</b>
-                    <color-picker-input model="effect.CkyEvent.props.itemLabelColors[$index]" label="Label Color"></color-picker-input>
+                    <color-picker-input model="effect.EventData.props.itemLabelColors[$index]" label="Label Color"></color-picker-input>
                   </div>
                 </div>
               </div>
@@ -169,7 +214,7 @@ export function overlaySpinWheelEffectType(
                 </span>
               </div>
             </div>
-            <p class="muted" ng-show="effect.CkyEvent.props.itemLabelColors.length < 1">No Item Label Colors added.</p>
+            <p class="muted" ng-show="effect.EventData.props.itemLabelColors.length < 1">No Item Label Colors added.</p>
             <div class="mx-0 mt-2.5 mb-4">
               <button class="filter-bar" ng-click="addSpinWheelItemLabelColor()" uib-tooltip="Add Item Label Colors" tooltip-append-to-body="true" aria-label="Add Item Label Colors">
                 <i class="far fa-plus"></i>
@@ -180,12 +225,12 @@ export function overlaySpinWheelEffectType(
           <div class="itemBackgroundColors">
             <div class="input-group" style="width: 100%;padding: 15px 0px 10px 0px;">
               <b>Item Background Colors</b>
-              <div ng-repeat="color in effect.CkyEvent.props.itemBackgroundColors track by $index" class="list-item">
+              <div ng-repeat="color in effect.EventData.props.itemBackgroundColors track by $index" class="list-item">
                 <div class="item ml-8" style="font-weight: 400;width: 100%;margin-bottom: 10px;">
                   <div>
                     <div style="margin-bottom: 10px;">
                       <b>Item Background Color</b>
-                      <color-picker-input model="effect.CkyEvent.props.itemBackgroundColors[$index]" label="Embed Color"></color-picker-input>
+                      <color-picker-input model="effect.EventData.props.itemBackgroundColors[$index]" label="Embed Color"></color-picker-input>
                     </div>
                   </div>
                 </div>
@@ -195,7 +240,7 @@ export function overlaySpinWheelEffectType(
                   </span>
                 </div>
               </div>
-              <p class="muted" ng-show="effect.CkyEvent.props.items.length < 1">No items added.</p>
+              <p class="muted" ng-show="effect.EventData.props.items.length < 1">No items added.</p>
               <div class="mx-0 mt-2.5 mb-4">
                 <button class="filter-bar" ng-click="addSpinWheelItemBackgroundColor()" uib-tooltip="Add item" tooltip-append-to-body="true" aria-label="Add item">
                   <i class="far fa-plus"></i>
@@ -206,7 +251,7 @@ export function overlaySpinWheelEffectType(
         </setting-container>
 
 
-    <!--
+        <!--
         <eos-container header="Advanced Settings" class="setting-padtop">
           <label class="control-fb control--checkbox">Show Advanced Settings
             <input type="checkbox" ng-model="effect.isAdvancedSettings">
@@ -259,10 +304,10 @@ export function overlaySpinWheelEffectType(
         </div>
     -->
         <eos-container header="Overlay" class="setting-padtop">
-        <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
-        <div class="effect-info alert alert-warning">
-                This effect requires the Firebot overlay to be loaded in your broadcasting software. <a href ng-click="showOverlayInfoModal(effect.overlayInstance)" style="text-decoration:underline">Learn more</a>
-        </div>
+          <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
+          <div class="effect-info alert alert-warning">
+            This effect requires the Firebot overlay to be loaded in your broadcasting software. <a href ng-click="showOverlayInfoModal(effect.overlayInstance)" style="text-decoration:underline">Learn more</a>
+          </div>
         </eos-container>
 
             `,
@@ -274,38 +319,41 @@ export function overlaySpinWheelEffectType(
                 triggerMeta: $scope.triggerMeta
             };
 
-            if ($scope.effect.CkyEvent == null) {
-                $scope.effect.CkyEvent = {};
-                $scope.effect.CkyEvent.props = {};
-                $scope.effect.CkyEvent.props.items = [];
-                $scope.effect.CkyEvent.props.itemBackgroundColors = ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"];
-                $scope.effect.CkyEvent.props.itemLabelColors = ["#000"];
-                $scope.effect.CkyEvent.props.radius = 0.89;
-                $scope.effect.CkyEvent.props.itemLabelFontSizeMax = 500;
-                $scope.effect.CkyEvent.props.pointerAngle = 90;
-                $scope.effect.CkyEvent.props.pixelRatio = 0;
-                $scope.effect.CkyEvent.props.rotation = 0;
-                $scope.effect.CkyEvent.props.isInteractive = true;
-                $scope.effect.CkyEvent.props.itemLabelBaselineOffset = 0;
-                $scope.effect.CkyEvent.props.itemLabelRadius = 0.92;
-                $scope.effect.CkyEvent.props.itemLabelRadiusMax = 0.37;
-                $scope.effect.CkyEvent.props.itemLabelRotation = 0;
-                $scope.effect.CkyEvent.props.itemLabelStrokeColor = '#fff';
-                $scope.effect.CkyEvent.props.itemLabelFont = "Rubik";
-                $scope.effect.CkyEvent.props.rotationSpeedMax = 700;
-                $scope.effect.CkyEvent.props.rotationResistance = -110;
-                $scope.effect.CkyEvent.props.borderColor = '#000';
-                $scope.effect.CkyEvent.props.lineWidth = 0;
-                $scope.effect.CkyEvent.props.overlayImage = `https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png`;
-                $scope.effect.CkyEvent.props.borderWidth = 0;
+            if ($scope.effect.EventData == null) {
+                $scope.effect.EventData = {};
+                $scope.effect.EventData.props = {};
+                $scope.effect.EventData.props.items = [];
+                $scope.effect.EventData.props.itemBackgroundColors = ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"];
+                $scope.effect.EventData.props.itemLabelColors = ["#000"];
+                $scope.effect.EventData.props.radius = 0.89;
+                $scope.effect.EventData.props.itemLabelFontSizeMax = 500;
+                $scope.effect.EventData.props.pointerAngle = 90;
+                $scope.effect.EventData.props.pixelRatio = 0;
+                $scope.effect.EventData.props.rotation = 0;
+                $scope.effect.EventData.props.isInteractive = true;
+                $scope.effect.EventData.props.itemLabelBaselineOffset = 0;
+                $scope.effect.EventData.props.itemLabelRadius = 0.92;
+                $scope.effect.EventData.props.itemLabelRadiusMax = 0.37;
+                $scope.effect.EventData.props.itemLabelRotation = 0;
+                $scope.effect.EventData.props.itemLabelStrokeColor = '#fff';
+                $scope.effect.EventData.props.itemLabelFont = "Rubik";
+                $scope.effect.EventData.props.rotationSpeedMax = 700;
+                $scope.effect.EventData.props.rotationResistance = -31;
+                $scope.effect.EventData.props.borderColor = '#000';
+                $scope.effect.EventData.props.lineWidth = 0;
+                $scope.effect.EventData.props.borderWidth = 0;
             }
 
-            if ($scope.effect.CkyEvent.props.itemLabelAlign == null) {
-                $scope.effect.CkyEvent.props.itemLabelAlign = "right";
+            if ($scope.effect.EventData.props.itemLabelAlign == null) {
+                $scope.effect.EventData.props.itemLabelAlign = "right";
             }
 
             if ($scope.effect.fileOrList == null) {
                 $scope.effect.fileOrList = "file";
+            }
+
+            if ($scope.effect.imageType == null) {
+                $scope.effect.imageType = "url";
             }
 
             $scope.showOverlayInfoModal = function (overlayInstance: string) {
@@ -313,42 +361,76 @@ export function overlaySpinWheelEffectType(
             };
             $scope.removeItemAtIndex = (index: number) => {
                 if (index > -1) {
-                    $scope.effect.CkyEvent.props.items.splice(index, 1);
+                    $scope.effect.EventData.props.items.splice(index, 1);
                 }
             }
 
             $scope.removeItemBackgroundColorsAtIndex = (index: number) => {
                 if (index > -1) {
-                    $scope.effect.CkyEvent.props.itemBackgroundColors.splice(index, 1);
+                    $scope.effect.EventData.props.itemBackgroundColors.splice(index, 1);
                 }
             }
 
             $scope.removeItemLabelColorsAtIndex = (index: number) => {
                 if (index > -1) {
-                    $scope.effect.CkyEvent.props.itemLabelColors.splice(index, 1);
+                    $scope.effect.EventData.props.itemLabelColors.splice(index, 1);
                 }
             }
 
             $scope.addSpinWheelItem = () => {
-                $scope.effect.CkyEvent.props.items.push(
+                $scope.effect.EventData.props.items.push(
                     {
                         label: "",
                         weight: 1
                     }
                 )
-                console.log($scope.effect.CkyEvent.props.items)
+                console.log($scope.effect.EventData.props.items)
             }
 
             $scope.addSpinWheelItemLabelColor = () => {
-                $scope.effect.CkyEvent.props.itemLabelColors.push("#000")
-                console.log($scope.effect.CkyEvent.props.itemLabelColors)
+                $scope.effect.EventData.props.itemLabelColors.push("#000")
+                console.log($scope.effect.EventData.props.itemLabelColors)
             }
 
             $scope.addSpinWheelItemBackgroundColor = () => {
-                $scope.effect.CkyEvent.props.itemBackgroundColors.push("#fff")
-                console.log($scope.effect.CkyEvent.props.itemBackgroundColors)
+                $scope.effect.EventData.props.itemBackgroundColors.push("#fff")
+                console.log($scope.effect.EventData.props.itemBackgroundColors)
             }
             //$scope.addSpinWheelItem();
+
+            $scope.placeHolderUrl = "https://cdn.discordapp.com/attachments/959615433848270859/1199955203898740839/wheel-2-overlay.png";
+
+            $scope.showImage = false;
+            $scope.imageLoaded = function (successful: boolean) {
+                $scope.showImage = successful;
+            };
+
+            $scope.getImagePreviewSrc = function () {
+                let path;
+                if ($scope.effect.imageType === "local") {
+                    path = $scope.effect.imageFile;
+                } else if ($scope.effect.imageType === "url") {
+                    path = $scope.effect.imageUrl;
+                } else {
+                    path = $scope.effect.imageFolder;
+                }
+
+                return path;
+            };
+
+            $scope.imageTypeUpdated = function () {
+                if ($scope.effect.imageType === "local") {
+                    $scope.effect.imageUrl = undefined;
+                    $scope.effect.imageFolder = undefined;
+                } else if ($scope.effect.imageType === "url") {
+                    $scope.effect.imageFile = undefined;
+                    $scope.effect.imageFolder = undefined;
+                } else {
+                    $scope.effect.imageUrl = undefined;
+                    $scope.effect.imageFile = undefined;
+                }
+            };
+
         },
 
         optionsValidator: (effect) => {
@@ -455,14 +537,19 @@ export function overlaySpinWheelEffectType(
                 } catch (err) {
                     logger.error("error reading file", err);
                 }
-                event.effect.CkyEvent.props.items = JSON.parse(contents);
+                event.effect.EventData.props.items = JSON.parse(contents);
             }
 
             const data: EventData = {
+                imageType: event.effect.imageType,
+                imageUrl: event.effect.imageUrl,
+                imageFolder: event.effect.imageFolder,
+                imageFile: event.effect.imageFile,
+                resourceToken: event.effect.resourceToken,
                 overlayInstance: event.effect.overlayInstance,
                 uuid: randomUUID(),
                 displayDuration: event.effect.displayDuration,
-                props: event.effect.CkyEvent.props
+                props: event.effect.EventData.props
                 // {
                 //     name: "Takeaway",
                 //     radius: 0.89,
@@ -524,6 +611,44 @@ export function overlaySpinWheelEffectType(
                 // }
             };
 
+
+            if (event.effect.imageType == null) {
+                event.effect.imageType = "local";
+            }
+
+            if (event.effect.imageType === "local") {
+                @ts-ignore
+                const resourceToken = resourceTokenManager.storeResourcePath(
+                    event.effect.imageFile,
+                    event.effect.displayDuration
+                );
+                data.resourceToken = resourceToken;
+            }
+
+            if (event.effect.imageType === "folderRandom") {
+
+                // let files = [];
+                // try {
+                //     files = await fs.readdir(event.effect.imageFolder);
+                // } catch (err) {
+                //     logger.warn("Unable to read image folder", err);
+                // }
+                // // @ts-ignore
+                // const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
+
+                // const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
+
+                // const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
+                // // @ts-ignore
+                // const resourceToken = resourceTokenManager.storeResourcePath(
+                //     fullFilePath,
+                //     event.effect.displayDuration
+                // );
+
+                // data.resourceToken = resourceToken;
+            }
+
+
             data.props.items.forEach((item) => {
                 // @ts-ignore
                 item.weight = parseFloat(item.weight) || 1;
@@ -559,10 +684,9 @@ export function overlaySpinWheelEffectType(
             },
             event: {
                 name: "cky-spinwheel",
-                onOverlayEvent: (event: CkyEvent) => {
+                onOverlayEvent: (event: EventData) => {
                     // Frontend Code Here
                     //const html = require('./spinhtml.html');
-
 
                     const html = /*html*/`<div id={{WHEELSPINDIVID}}>
                                     <div class="spin-wheel">
@@ -617,13 +741,25 @@ export function overlaySpinWheelEffectType(
 
                     function loadHtmlAndExecute() {
                         const { uuid, displayDuration, props } = event;
+                        const data = event;
+console.log(data)
+                        if (data.imageType === "url") {
+                            data.props.overlayImage = data.imageUrl;
+                        } else {
+                            const token = encodeURIComponent(data.resourceToken);
+                            data.props.overlayImage = `http://${window.location.hostname
+                                }:7472/resource/${token}`;
+                        }
 
                         $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
                         const container = document.getElementById(uuid).getElementsByClassName("wheel-wrapper")[0];
                         // @ts-ignore
                         window.wheel = new spinWheel.Wheel(container, props);
+                        function sinInOut(t: number) {
+                            return (1 - Math.cos(Math.PI * t)) / 2;
+                        }
 
-                        function fetchWinningItemIndexFromApi() {
+                        function fetchWinningItemIndex() {
                             return getRandomInt(0, props.items.length);
                         }
                         function getRandomInt(min: number, max: number) {
@@ -633,9 +769,9 @@ export function overlaySpinWheelEffectType(
                         }
                         // @ts-ignore
                         wheel.pointerAngle = 90;
-                        const winningItemIndex = fetchWinningItemIndexFromApi();
+                        const winningItemIndex = fetchWinningItemIndex();
                         const duration = 2600;
-                        const revolutions = 200;
+                        const revolutions = 200; 
                         // @ts-ignore
                         wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1);
                         // @ts-ignore

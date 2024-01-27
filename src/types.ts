@@ -24,7 +24,7 @@ interface Props {
     items: PropsItem[]
     borderColor: string;
     debug: boolean;
-
+    lineColor: string;
 }
 
 export interface PropsItem {
@@ -33,17 +33,17 @@ export interface PropsItem {
 }
 
 export interface EventData {
+    imageType: string;
+    imageUrl: string;
+    imageFile: string;
+    imageFolder: string;
+    resourceToken: string | number | boolean;
     overlayInstance: String;
     uuid: string;
     displayDuration: number
     props: Props;
 }
 
-export interface CkyEvent {
-    uuid: string;
-    displayDuration: number;
-    props: Props
-}
 
 export interface EV {
     name: string;
