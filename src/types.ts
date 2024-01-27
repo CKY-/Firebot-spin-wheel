@@ -10,7 +10,7 @@ interface Props {
     itemLabelRadius: number;
     itemLabelRadiusMax: number;
     itemLabelRotation: number;
-    itemLabelAlign: any;
+    itemLabelAlign: string;
     itemLabelStrokeColor: string;
     itemLabelColors: string[];
     itemLabelBaselineOffset: number;

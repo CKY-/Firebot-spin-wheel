@@ -773,7 +773,7 @@ console.log(data)
                         // @ts-ignore
                         wheel.onRest = (e) => {
                             // @ts-ignore
-                            sendWebsocketEvent(uuid, { "result": `"${props.items[e.currentIndex].label}"` });
+                            sendWebsocketEvent(uuid, { result: props.items[e.currentIndex].label });
                             console.log(e);
                             console.log(props.items[e.currentIndex].label);
 
