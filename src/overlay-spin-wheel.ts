@@ -6,6 +6,7 @@ import { logger } from "./logger";
 import { webServer } from "./main";
 import { randomUUID } from "crypto";
 import { EventData, EV } from "./types";
+//import * as  easing  from "./easing" 
 //import { cubicOut, cubicInOut, bounceOut, elasticInOut, sinInOut, } from "./easing";
 
 const fs = require("fs");
@@ -309,12 +310,6 @@ export function overlaySpinWheelEffectType(
 
             `,
         optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any) => {
-            $scope.optionSettings = {
-                noDuplicates: true,
-                maxItems: 5,
-                trigger: $scope.trigger,
-                triggerMeta: $scope.triggerMeta
-            };
 
             if ($scope.effect.EventData == null) {
                 $scope.effect.EventData = {};
@@ -538,6 +533,7 @@ export function overlaySpinWheelEffectType(
             }
 
             const data: EventData = {
+
                 imageType: event.effect.imageType,
                 imageUrl: event.effect.imageUrl,
                 imageFolder: event.effect.imageFolder,
@@ -684,7 +680,7 @@ export function overlaySpinWheelEffectType(
                     // Frontend Code Here
                     //const html = require('./spinhtml.html');
 
-                    const html = /*html*/`<div id={{WHEELSPINDIVID}}>
+                    const html = /*html*/`<div id={{WHEELSPINDIVID}}>                    
                                     <div class="spin-wheel">
                                         <style>
                                             @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');
@@ -738,6 +734,7 @@ export function overlaySpinWheelEffectType(
                     function loadHtmlAndExecute() {
                         const { uuid, displayDuration, props } = event;
                         const data = event;
+                        let easing;
 console.log(data)
                         if (data.imageType === "url") {
                             data.props.overlayImage = data.imageUrl;
@@ -749,12 +746,41 @@ console.log(data)
 
                         $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
                         const container = document.getElementById(uuid).getElementsByClassName("wheel-wrapper")[0];
+
+                        const easingFunctions = [
+                            {
+                                label: 'default (easeSinOut)',
+                                function: null,
+                            },
+                            {
+                                label: 'easeSinInOut',
+                                // @ts-ignore
+                                function: easing.sinInOut,
+                            },
+                            {
+                                label: 'easeCubicOut',
+                                // @ts-ignore
+                                function: easing.cubicOut,
+                            },
+                            {
+                                label: 'easeCubicInOut',
+                                // @ts-ignore
+                                function: easing.cubicInOut,
+                            },
+                            {
+                                label: 'easeElasticOut',
+                                // @ts-ignore
+                                function: easing.elasticInOut,
+                            },
+                            {
+                                label: 'easeBounceOut',
+                                // @ts-ignore
+                                function: easing.bounceOut,
+                            },
+                        ];
+
                         // @ts-ignore
                         window.wheel = new spinWheel.Wheel(container, props);
-                        function sinInOut(t: number) {
-                            return (1 - Math.cos(Math.PI * t)) / 2;
-                        }
-
                         function fetchWinningItemIndex() {
                             return getRandomInt(0, props.items.length);
                         }
@@ -769,7 +795,7 @@ console.log(data)
                         const duration = 2600;
                         const revolutions = 200; 
                         // @ts-ignore
-                        wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1);
+                        wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1, easingFunctions[5].function);
                         // @ts-ignore
                         wheel.onRest = (e) => {
                             // @ts-ignore
@@ -779,6 +805,10 @@ console.log(data)
 
                             setTimeout(() => $(`#${uuid}`).remove(), displayDuration * 1000);
                         };
+                    }
+                    function doWindowEasing() {
+                        // @ts-ignore
+                        easing = window.easing;
                     }
 
                     const script_elem = document.getElementById("cky-spin-wheel-iife");
@@ -797,6 +827,21 @@ console.log(data)
                         }
 
                         document.head.appendChild(spin_wheel);
+
+                        const easing = document.createElement('script');
+
+                        easing.type ="module";
+
+                        easing.id = "cky-spin-wheel-easing"
+
+                        easing.async = false;
+
+                        easing.innerHTML = `import * as easing from 'http://${window.location.host}/integrations/cky-spin/easing.js';
+                        window.easing = easing;`
+                        easing.onload = function () {
+                            doWindowEasing();
+                        }
+                        document.head.appendChild(easing);
                     } else {
                         loadHtmlAndExecute();
                     }

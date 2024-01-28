@@ -33,6 +33,7 @@ export interface PropsItem {
 }
 
 export interface EventData {
+    
     imageType: string;
     imageUrl: string;
     imageFile: string;
@@ -43,7 +44,6 @@ export interface EventData {
     displayDuration: number
     props: Props;
 }
-
 
 export interface EV {
     name: string;

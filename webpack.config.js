@@ -29,7 +29,7 @@ module.exports = {
         loader: 'raw-loader',
       },
       {
-        test: /frontendJs\/(.*)\.js$/,
+        test: /\.mj$/i,
         loader: "raw-loader",
       }
     ],

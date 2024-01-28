@@ -3,7 +3,8 @@ import { overlaySpinWheelEffectType } from "./overlay-spin-wheel";
 import { initLogger, logger } from "./logger";
 import { Request, Response } from 'express';
 import spinHtml from './spinhtml.html';
-//import spinJs from './frontendJs/spin.js';
+// @ts-ignore
+import easing from './easing.mj';
 import { HttpServerManager } from "@crowbartools/firebot-custom-scripts-types/types/modules/http-server-manager";
 
 interface Params {
@@ -25,11 +26,16 @@ const script: Firebot.CustomScript<Params> = {
   },
   run: (runRequest) => {
     const { effectManager, frontendCommunicator,resourceTokenManager, httpServer } = runRequest.modules;
-    webServer = httpServer;
-
+    
+    httpServer.unregisterCustomRoute("cky-spin", "easing.js", "GET");
+    httpServer.registerCustomRoute("cky-spin", "easing.js", "GET", (req: Request, res: Response) => {
+      res.setHeader('content-type', 'text/javascript');
+      res.end(easing)
+    });
+    webServer = httpServer
     initLogger(runRequest.modules.logger);
     logger.info("Timer Overlay Script is loading...");
-
+    logger.info(easing);
     // const { logger } = runRequest.modules;
     const request = (runRequest.modules as any).request;
     effectManager.registerEffect(
