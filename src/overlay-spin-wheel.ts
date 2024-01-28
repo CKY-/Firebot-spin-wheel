@@ -757,7 +757,7 @@ export function overlaySpinWheelEffectType(
               {
                 label: 'easeSinInOut',
                 // @ts-ignore
-                function: window.easing.sinInOut,
+                function:Ut,
               },
               {
                 label: 'easeCubicOut',
@@ -797,11 +797,8 @@ export function overlaySpinWheelEffectType(
             const duration = 2600;
             const revolutions = 4;
             // @ts-ignore
-            wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1, easingFunctions[5].function);
-            // @ts-ignore
-            //wheel.spinToItem(winningItemIndex, duration, true, revolutions, 1, easingFunctions[5].function);
-            // wheel.spinToItem(winningItemIndex, duration, true, revolutions, spinDirection, easingFunction);
-            
+            wheel.spinToItem(winningItemIndex, duration, false, revolutions, 1, easingFunctions[1].function);
+
             // @ts-ignore
             wheel.onRest = (e) => {
               // @ts-ignore
