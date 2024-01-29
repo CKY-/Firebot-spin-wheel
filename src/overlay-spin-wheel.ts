@@ -620,29 +620,29 @@ export function overlaySpinWheelEffectType(
 
       if (event.effect.imageType === "folderRandom") {
 
-        let files = [];
+        let files:string[] = [];
         console.log("effect.folder:", event.effect.imageFolder)
         try {
           files = await readdir(event.effect.imageFolder)
         } catch (err) {
           logger.warn("Unable to read image folder", err);
         }
+
+        // @ts-ignore
+        const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
+        console.log("filterdfiles:", filteredFiles)
+        const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
+        console.log("chosenFile:", chosenFile)
+        const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
+        console.log("fullPath:", fullFilePath)
+        const resourceToken = resourceTokenManager.storeResourcePath(
+          fullFilePath,
+          event.effect.displayDuration
+        );
+        data.resourceToken = resourceToken;
+        console.log("tokenInsideCB:", data.resourceToken)
       }
-
-      // @ts-ignore
-      const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
-      console.log("filterdfiles:", filteredFiles)
-      const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
-      console.log("chosenFile:", chosenFile)
-      const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
-      console.log("fullPath:", fullFilePath)
-      const resourceToken = resourceTokenManager.storeResourcePath(
-        fullFilePath,
-        event.effect.displayDuration
-      );
-      data.resourceToken = resourceToken;
-      console.log("tokenInsideCB:", data.resourceToken)
-
+      
       data.props.items.forEach((item) => {
         // @ts-ignore
         item.weight = parseFloat(item.weight) || 1;
