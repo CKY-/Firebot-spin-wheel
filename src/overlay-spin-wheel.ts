@@ -1,13 +1,13 @@
 import { Firebot, RunRequest, ScriptModules } from "@crowbartools/firebot-custom-scripts-types";
 import { v4 } from "uuid";
-import path, { resolve } from "path";
-//import { spinWheelList } from "./gui/app/directives/controls/spin-wheel-list.js"
+import * as path from "path";
+import { readdir } from 'node:fs/promises';
 import { logger } from "./logger";
 import { webServer } from "./main";
 import { randomUUID } from "crypto";
 import { EventData, EV } from "./types";
-//import * as  easing  from "./easing" 
-//import { cubicOut, cubicInOut, bounceOut, elasticInOut, sinInOut, } from "./easing";
+import { resolve } from "path";
+
 
 const fs = require("fs");
 const wait = (ms: number) => {
@@ -621,31 +621,33 @@ export function overlaySpinWheelEffectType(
       if (event.effect.imageType === "folderRandom") {
 
         let files = [];
+        console.log("effect.folder:", event.effect.imageFolder)
         try {
-          files = await fs.readdir(event.effect.imageFolder);
+          files = await readdir(event.effect.imageFolder)
         } catch (err) {
           logger.warn("Unable to read image folder", err);
         }
-        // @ts-ignore
-        const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
-
-        const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
-
-        const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
-        const resourceToken = resourceTokenManager.storeResourcePath(
-          fullFilePath,
-          event.effect.displayDuration
-        );
-
-        data.resourceToken = resourceToken;
       }
 
+      // @ts-ignore
+      const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
+      console.log("filterdfiles:", filteredFiles)
+      const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
+      console.log("chosenFile:", chosenFile)
+      const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
+      console.log("fullPath:", fullFilePath)
+      const resourceToken = resourceTokenManager.storeResourcePath(
+        fullFilePath,
+        event.effect.displayDuration
+      );
+      data.resourceToken = resourceToken;
+      console.log("tokenInsideCB:", data.resourceToken)
 
       data.props.items.forEach((item) => {
         // @ts-ignore
         item.weight = parseFloat(item.weight) || 1;
       });
-
+      console.log("tokenOutsideCB:", data.resourceToken)
       const waitPromise = new Promise<string>((resolve) => {
         const listener = (ev: EV) => {
           if (ev.name !== data.uuid) return;
@@ -757,7 +759,7 @@ export function overlaySpinWheelEffectType(
               {
                 label: 'easeSinInOut',
                 // @ts-ignore
-                function:Ut,
+                function: window.easing.sinInOut,
               },
               {
                 label: 'easeCubicOut',
@@ -841,7 +843,7 @@ export function overlaySpinWheelEffectType(
               loadHtmlAndExecute();
             }
             document.head.appendChild(spin_wheel);
-      
+
           } else {
             loadHtmlAndExecute();
           }
