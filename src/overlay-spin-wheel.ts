@@ -84,6 +84,24 @@ export function overlaySpinWheelEffectType(
     optionsTemplate: effectTemplate,
     optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any) => {
 
+      $scope.easingFunctions = [
+        'default (easeSinOut)',
+        'easeSinInOut',
+        'easeCubicOut',
+        'easeCubicInOut',
+        'easeElasticOut',
+        'easeBounceOut',
+      ];
+
+      $scope.setEasingType = function () {
+        $scope.effect.easingValue = $scope.easingFunctions.findIndex((label: string) => {
+          console.log(label);
+          console.log($scope.effect.easingLabel);
+          return label === $scope.effect.easingLabel;
+        });
+        console.log($scope.effect.easingValue, $scope.effect.easingLabel);
+      }
+
       $scope.resetDefault = () => {
         $scope.effect.EventData = {};
         $scope.effect.EventData.props = {};
@@ -107,10 +125,22 @@ export function overlaySpinWheelEffectType(
         $scope.effect.EventData.props.borderColor = '#000';
         $scope.effect.EventData.props.lineWidth = 0;
         $scope.effect.EventData.props.borderWidth = 0;
+        $scope.effect.easingValue = 0;
+        $scope.effect.easingLabel = $scope.easingFunctions[$scope.effect.easingValue];
       }
 
+      // $scope.sliderTranslate = (value: number) => value * 100;
       if ($scope.effect.EventData == null) {
         $scope.resetDefault();
+      }
+
+      if ($scope.effect.easingValue == null || $scope.effect.easingValue === -1) {
+        console.log($scope.effect.easingValue)
+        $scope.effect.easingValue = 0;
+      }
+
+      if ($scope.effect.easingLabel == "" || $scope.effect.easingLabel == null) {
+        $scope.effect.easingLabel = $scope.easingFunctions[$scope.effect.easingValue];
       }
 
       if ($scope.effect.EventData.props.itemLabelAlign == null) {
@@ -201,20 +231,20 @@ export function overlaySpinWheelEffectType(
         }
       };
 
-      $scope.setEasingType = function (easing: number) {
-        $scope.effect.EventData.easingValue = easing;
-        $scope.effect.EventData.easingLabel = easingFunctions[easing];
-        console.log($scope.effect.EventData.easingValue);
-      }
+      //   $scope.setEasingType = function (easing: number) {
+      //     $scope.effect.EventData.easingValue = easing;
+      //  //   $scope.effect.EventData.easingLabel = easingFunctions[easing];
+      //     console.log($scope.effect.EventData.easingValue);
+      //   }
 
-      const easingFunctions = [
-        'default (easeSinOut)',
-        'easeSinInOut',
-        'easeCubicOut',
-        'easeCubicInOut',
-        'easeElasticOut',
-        'easeBounceOut',
-      ];
+      // const easingFunctions = [
+      //   'default (easeSinOut)',
+      //   'easeSinInOut',
+      //   'easeCubicOut',
+      //   'easeCubicInOut',
+      //   'easeElasticOut',
+      //   'easeBounceOut',
+      // ];
 
     },
 
@@ -527,7 +557,6 @@ export function overlaySpinWheelEffectType(
           function loadHtmlAndExecute() {
             const { uuid, displayDuration, props } = event;
             const data = event;
-            let easing = null;
             console.log(data)
             if (data.imageType === "url") {
               data.props.overlayImage = data.imageUrl;
@@ -589,7 +618,7 @@ export function overlaySpinWheelEffectType(
               return Math.floor(Math.random() * (max - min) + min);
             }
             // @ts-ignore
-            wheel.pointerAngle = 90;
+           // wheel.pointerAngle = 90;
             const winningItemIndex = fetchWinningItemIndex();
             const duration = 2600;
             const revolutions = 4;
