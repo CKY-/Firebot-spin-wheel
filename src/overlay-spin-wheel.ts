@@ -85,7 +85,7 @@ export function overlaySpinWheelEffectType(
 
         <setting-container header="Spin Wheel Settings" collapsed="true">
           <firebot-input input-title="Name" model="effect.EventData.props.name" placeholder="Enter a name for the spin Wheel."></firebot-input>
-          <div class="effect-specific-title" style="margin-bottom: 10px; margin-top: 10px; width: 100%>
+          <div class="effect-specific-title" style="margin-bottom: 10px; margin-top: 10px; width: 100%">
                <h4>easing</h4>
           </div>
             <div class="btn-group" style="margin-bottom: 10px; margin-top: 10px; width: 100%">
@@ -220,6 +220,7 @@ export function overlaySpinWheelEffectType(
 
         <setting-container header="File" pad-top="true" collapsed="true" ng-if="effect.fileOrList === 'file'">
           <file-chooser model="effect.filePath" options="{ filters: [ {name:'Text',extensions:['txt']} ]}"></file-chooser>
+
           <div class="effect-info alert alert-warning">
             "weight" is optional
             Here is a file template:
@@ -234,6 +235,7 @@ export function overlaySpinWheelEffectType(
             <br> }
             <br>]
           </div>
+
         </setting-container>
 
         <setting-container header="Colors" pad-top="true" collapsed="true">
