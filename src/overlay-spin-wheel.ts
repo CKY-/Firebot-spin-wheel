@@ -41,6 +41,8 @@ interface EffectModel {
   imageFile: string;
   imageFolder: string;
   resourceToken: string | number | boolean;
+  easingValue: number;
+  easingLabel: string;
   //html: string;
 }
 
@@ -83,6 +85,34 @@ export function overlaySpinWheelEffectType(
 
         <setting-container header="Spin Wheel Settings" collapsed="true">
           <firebot-input input-title="Name" model="effect.EventData.props.name" placeholder="Enter a name for the spin Wheel."></firebot-input>
+          <div class="effect-specific-title" style="margin-bottom: 10px; margin-top: 10px; width: 100%>
+               <h4>easing</h4>
+          </div>
+            <div class="btn-group" style="margin-bottom: 10px; margin-top: 10px; width: 100%">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="change-scene-type-effect-type">{{effect.EventData.easingLabel ? effect.EventData.easingLabel : "default (easeSinOut)"}}</span> <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li ng-click="effect.reset = false">
+                  <a ng-click="setEasingType(0)" href>default (easeSinOut)</a>
+                </li>
+                <li ng-click="effect.reset = false">
+                  <a ng-click="setEasingType(1)" href>easeSinInOut</a>
+                </li>
+                <li ng-click="effect.reset = true">
+                  <a ng-click="setEasingType(2)" href>easeCubicOut</a>
+                </li>
+                <li ng-click="effect.reset = true">
+                  <a ng-click="setEasingType(3)" href>easeCubicInOut</a>
+                </li>
+                <li ng-click="effect.reset = true">
+                  <a ng-click="setEasingType(4)" href>easeElasticOut</a>
+                </li>
+                <li ng-click="effect.reset = true">
+                  <a ng-click="setEasingType(5)" href>easeBounceOut</a>
+                </li>
+              </ul>
+            </div>
 
           <div class="effect-specific-title setting-padtop">
             <h4>Image</h4>
@@ -92,6 +122,7 @@ export function overlaySpinWheelEffectType(
               <img ng-show="showImage" ng-src="{{getImagePreviewSrc()}}" imageonload="imageLoaded" style="height: 100px;width: 175px;object-fit: scale-down;background: #d7d7d7">
               <img ng-hide="showImage" src="{{placeHolderUrl}}" style="height: 100px;width: 175px;object-fit: scale-down;background: #d7d7d7">
             </div>
+
             <div class="controls-fb-inline" style="padding-bottom: 5px;">
               <label class="control-fb control--radio">Local file
                 <input type="radio" ng-model="effect.imageType" value="local" ng-change="imageTypeUpdated()" />
@@ -117,16 +148,17 @@ export function overlaySpinWheelEffectType(
             </div>
           </div>
 
-
-
           <label class="control-fb control--checkbox" style="margin-top:15px"> Show Debug Box's
             <input type="checkbox" ng-model="effect.EventData.props.debug">
             <div class="control__indicator"></div>
           </label>
           <firebot-input input-title="Duration" model="effect.displayDuration" placeholder="Enter time in seconds."></firebot-input>
-          <!--
-            <p>Align</p>
-            <label class="control-fb control--radio">Left
+
+          <div class="effect-specific-title setting-padtop" style="margin-top:15px">
+            <h4>Align</h4>
+          </div>
+          <div class="controls-fb" style="padding-bottom: 5px;">
+            <label class="controls-fb control--radio">Left
               <input type="radio" ng-model="effect.EventData.props.itemLabelAlign" value="left" />
               <div class="control__indicator"></div>
             </label>
@@ -138,16 +170,26 @@ export function overlaySpinWheelEffectType(
               <input type="radio" ng-model="effect.EventData.props.itemLabelAlign" value="right" />
               <div class="control__indicator"></div>
             </label>
-            -->
-          <p>file or list</p>
-          <label class="control-fb control--radio">file
-            <input type="radio" ng-model="effect.fileOrList" value="file" />
-            <div class="control__indicator"></div>
-          </label>
-          <label class="control-fb control--radio">list
-            <input type="radio" ng-model="effect.fileOrList" value="list" />
-            <div class="control__indicator"></div>
-          </label>
+          </div>
+
+          <div class="effect-specific-title setting-padtop" style="margin-top:15px">
+            <h4>file or list</h4>
+          </div>
+          <div class="controls-fb" style="padding-bottom: 5px;">
+            <label class="controls-fb control--radio">file
+              <input type="radio" ng-model="effect.fileOrList" value="file" />
+              <div class="control__indicator"></div>
+            </label>
+            <label class="control-fb control--radio">list
+              <input type="radio" ng-model="effect.fileOrList" value="list" />
+              <div class="control__indicator"></div>
+            </label>
+          </div>
+          <div class="ml-4">
+            <span class="clickable" style="color: #fb7373;" ng-click="resetDefault();" aria-label="Reset All Settings">
+              <i>Reset All Settings</i>
+            </span>
+          </div>
         </setting-container>
 
         <setting-container header="Choices" pad-top="true" collapsed="true" ng-if="effect.fileOrList === 'list'">
@@ -311,7 +353,7 @@ export function overlaySpinWheelEffectType(
             `,
     optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any) => {
 
-      if ($scope.effect.EventData == null) {
+      $scope.resetDefault = () => {
         $scope.effect.EventData = {};
         $scope.effect.EventData.props = {};
         $scope.effect.EventData.props.items = [];
@@ -336,6 +378,10 @@ export function overlaySpinWheelEffectType(
         $scope.effect.EventData.props.borderWidth = 0;
       }
 
+      if ($scope.effect.EventData == null) {
+        $scope.resetDefault();
+      }
+
       if ($scope.effect.EventData.props.itemLabelAlign == null) {
         $scope.effect.EventData.props.itemLabelAlign = "right";
       }
@@ -351,6 +397,7 @@ export function overlaySpinWheelEffectType(
       $scope.showOverlayInfoModal = function (overlayInstance: string) {
         utilityService.showOverlayInfoModal(overlayInstance);
       };
+
       $scope.removeItemAtIndex = (index: number) => {
         if (index > -1) {
           $scope.effect.EventData.props.items.splice(index, 1);
@@ -422,6 +469,21 @@ export function overlaySpinWheelEffectType(
           $scope.effect.imageFile = undefined;
         }
       };
+
+      $scope.setEasingType = function (easing: number) {
+        $scope.effect.EventData.easingValue = easing;
+        $scope.effect.EventData.easingLabel = easingFunctions[easing];
+        console.log($scope.effect.EventData.easingValue);
+      }
+
+      const easingFunctions = [
+        'default (easeSinOut)',
+        'easeSinInOut',
+        'easeCubicOut',
+        'easeCubicInOut',
+        'easeElasticOut',
+        'easeBounceOut',
+      ];
 
     },
 
@@ -534,6 +596,7 @@ export function overlaySpinWheelEffectType(
 
       const data: EventData = {
 
+        easingValue: event.effect.easingValue,
         imageType: event.effect.imageType,
         imageUrl: event.effect.imageUrl,
         imageFolder: event.effect.imageFolder,
@@ -604,7 +667,6 @@ export function overlaySpinWheelEffectType(
         // }
       };
 
-
       if (event.effect.imageType == null) {
         event.effect.imageType = "local";
       }
@@ -620,8 +682,7 @@ export function overlaySpinWheelEffectType(
 
       if (event.effect.imageType === "folderRandom") {
 
-        let files:string[] = [];
-        console.log("effect.folder:", event.effect.imageFolder)
+        let files: string[] = [];
         try {
           files = await readdir(event.effect.imageFolder)
         } catch (err) {
@@ -630,19 +691,18 @@ export function overlaySpinWheelEffectType(
 
         // @ts-ignore
         const filteredFiles = files.filter(i => (/\.(gif|jpg|jpeg|png)$/i).test(i));
-        console.log("filterdfiles:", filteredFiles)
+
         const chosenFile = filteredFiles[Math.floor(Math.random() * filteredFiles.length)];
-        console.log("chosenFile:", chosenFile)
+
         const fullFilePath = path.join(event.effect.imageFolder, chosenFile);
-        console.log("fullPath:", fullFilePath)
+
         const resourceToken = resourceTokenManager.storeResourcePath(
           fullFilePath,
           event.effect.displayDuration
         );
         data.resourceToken = resourceToken;
-        console.log("tokenInsideCB:", data.resourceToken)
       }
-      
+
       data.props.items.forEach((item) => {
         // @ts-ignore
         item.weight = parseFloat(item.weight) || 1;
@@ -741,9 +801,13 @@ export function overlaySpinWheelEffectType(
             if (data.imageType === "url") {
               data.props.overlayImage = data.imageUrl;
             } else {
-              const token = encodeURIComponent(data.resourceToken);
-              data.props.overlayImage = `http://${window.location.hostname
-                }:7472/resource/${token}`;
+              if (data.resourceToken != null) {
+                const token = encodeURIComponent(data.resourceToken);
+                data.props.overlayImage = `http://${window.location.hostname
+                  }:7472/resource/${token}`;
+              } else {
+                data.props.overlayImage = "https://cdn.discordapp.com/attachments/1195710104834691182/1200288158638682132/wheel-4-overlay-2.png"
+              }
             }
 
             $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
@@ -799,7 +863,7 @@ export function overlaySpinWheelEffectType(
             const duration = 2600;
             const revolutions = 4;
             // @ts-ignore
-            wheel.spinToItem(winningItemIndex, duration, false, revolutions, 1, easingFunctions[1].function);
+            wheel.spinToItem(winningItemIndex, duration, false, revolutions, 1, easingFunctions[data.easingValue].function);
 
             // @ts-ignore
             wheel.onRest = (e) => {
@@ -827,7 +891,6 @@ export function overlaySpinWheelEffectType(
             easing.innerHTML = `import * as easing from 'http://${window.location.host}/integrations/cky-spin/easing.js';
                         window.easing = easing;
                         console.log('1');`
-
 
             document.head.appendChild(easing);
 

@@ -34,6 +34,7 @@ export interface PropsItem {
 
 export interface EventData {
     
+    easingValue: number;
     imageType: string;
     imageUrl: string;
     imageFile: string;
