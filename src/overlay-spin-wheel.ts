@@ -214,7 +214,6 @@ export function overlaySpinWheelEffectType(
         } else {
           path = $scope.effect.imageFolder;
         }
-
         return path;
       };
 
@@ -230,26 +229,9 @@ export function overlaySpinWheelEffectType(
           $scope.effect.imageFile = undefined;
         }
       };
-
-      //   $scope.setEasingType = function (easing: number) {
-      //     $scope.effect.EventData.easingValue = easing;
-      //  //   $scope.effect.EventData.easingLabel = easingFunctions[easing];
-      //     console.log($scope.effect.EventData.easingValue);
-      //   }
-
-      // const easingFunctions = [
-      //   'default (easeSinOut)',
-      //   'easeSinInOut',
-      //   'easeCubicOut',
-      //   'easeCubicInOut',
-      //   'easeElasticOut',
-      //   'easeBounceOut',
-      // ];
-
     },
 
     optionsValidator: (effect) => {
-
       let errors = [];
       if (effect.displayDuration == null) {
         errors.push("Please enter a value for the timer");
