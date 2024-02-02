@@ -95,11 +95,11 @@ export function overlaySpinWheelEffectType(
 
       $scope.setEasingType = function () {
         $scope.effect.easingValue = $scope.easingFunctions.findIndex((label: string) => {
-          console.log(label);
-          console.log($scope.effect.easingLabel);
+         // console.log(label);
+         // console.log($scope.effect.easingLabel);
           return label === $scope.effect.easingLabel;
         });
-        console.log($scope.effect.easingValue, $scope.effect.easingLabel);
+       // console.log($scope.effect.easingValue, $scope.effect.easingLabel);
       }
 
       $scope.resetDefault = () => {
@@ -135,7 +135,7 @@ export function overlaySpinWheelEffectType(
       }
 
       if ($scope.effect.easingValue == null || $scope.effect.easingValue === -1) {
-        console.log($scope.effect.easingValue)
+        //console.log($scope.effect.easingValue)
         $scope.effect.easingValue = 0;
       }
 
@@ -184,17 +184,17 @@ export function overlaySpinWheelEffectType(
             weight: 1
           }
         )
-        console.log($scope.effect.EventData.props.items)
+       // console.log($scope.effect.EventData.props.items)
       }
 
       $scope.addSpinWheelItemLabelColor = () => {
         $scope.effect.EventData.props.itemLabelColors.push("#000")
-        console.log($scope.effect.EventData.props.itemLabelColors)
+        //console.log($scope.effect.EventData.props.itemLabelColors)
       }
 
       $scope.addSpinWheelItemBackgroundColor = () => {
         $scope.effect.EventData.props.itemBackgroundColors.push("#fff")
-        console.log($scope.effect.EventData.props.itemBackgroundColors)
+        //console.log($scope.effect.EventData.props.itemBackgroundColors)
       }
       //$scope.addSpinWheelItem();
 
@@ -450,7 +450,7 @@ export function overlaySpinWheelEffectType(
         // @ts-ignore
         item.weight = parseFloat(item.weight) || 1;
       });
-      console.log("tokenOutsideCB:", data.resourceToken)
+      //console.log("tokenOutsideCB:", data.resourceToken)
       const waitPromise = new Promise<string>((resolve) => {
         const listener = (ev: EV) => {
           if (ev.name !== data.uuid) return;
@@ -539,7 +539,7 @@ export function overlaySpinWheelEffectType(
           function loadHtmlAndExecute() {
             const { uuid, displayDuration, props } = event;
             const data = event;
-            console.log(data)
+            //console.log(data)
             if (data.imageType === "url") {
               data.props.overlayImage = data.imageUrl;
             } else {
@@ -555,7 +555,7 @@ export function overlaySpinWheelEffectType(
             $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
             const container = document.getElementById(uuid).getElementsByClassName("wheel-wrapper")[0];
 
-            console.log('2');
+            //console.log('2');
 
             const easingFunctions = [
               {
@@ -611,8 +611,8 @@ export function overlaySpinWheelEffectType(
             wheel.onRest = (e) => {
               // @ts-ignore
               sendWebsocketEvent(uuid, { result: props.items[e.currentIndex].label });
-              console.log(e);
-              console.log(props.items[e.currentIndex].label);
+              //console.log(e);
+              //console.log(props.items[e.currentIndex].label);
 
               setTimeout(() => $(`#${uuid}`).remove(), displayDuration * 1000);
             };
@@ -632,7 +632,7 @@ export function overlaySpinWheelEffectType(
 
             easing.innerHTML = `import * as easing from 'http://${window.location.host}/integrations/cky-spin/easing.js';
                         window.easing = easing;
-                        console.log('1');`
+                       //console.log('1');`
 
             document.head.appendChild(easing);
 

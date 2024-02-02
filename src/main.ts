@@ -34,8 +34,8 @@ const script: Firebot.CustomScript<Params> = {
     });
     webServer = httpServer
     initLogger(runRequest.modules.logger);
-    logger.info("Timer Overlay Script is loading...");
-    logger.info(easing);
+    //logger.info("SpinWheel Overlay Script is loading...");
+    //logger.info(easing);
     // const { logger } = runRequest.modules;
     const request = (runRequest.modules as any).request;
     effectManager.registerEffect(
