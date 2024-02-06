@@ -15,7 +15,7 @@ const wait = (ms: number) => {
 };
 
 interface EffectModel {
-  variable: PropsItem[];
+  variable: string;
   displayDuration: number;
   // endTriggerCallUrl: String;
   // inbetweenAnimation: any;
@@ -338,7 +338,7 @@ export function overlaySpinWheelEffectType(
         event.effect.EventData.props.items = JSON.parse(contents);
       }
       else if (event.effect.fileOrList == "variable"){
-        event.effect.EventData.props.items = event.effect.variable
+        event.effect.EventData.props.items = JSON.parse(event.effect.variable);
       }
 
       const data: EventData = {
