@@ -13,10 +13,10 @@ interface Params {
 const script: Firebot.CustomScript<Params> = {
   getScriptManifest: () => {
     return {
-      name: "Spin Wheel Script",
+      name: "Spin Wheel Script 2",
       description: "Spin Wheel Effect",
       author: "CKY",
-      version: "1.0.2",
+      version: "2.0.0",
       firebotVersion: "5",
     };
   },
