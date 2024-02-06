@@ -16,7 +16,7 @@ const script: Firebot.CustomScript<Params> = {
       name: "Spin Wheel Script",
       description: "Spin Wheel Effect",
       author: "CKY",
-      version: "1.0",
+      version: "1.1",
       firebotVersion: "5",
     };
   },
