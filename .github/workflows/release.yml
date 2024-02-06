@@ -1,0 +1,28 @@
+name: Node.js CI
+
+
+on:
+   release:
+      types: [created]
+
+
+jobs:
+    build:
+        strategy:
+          matrix:
+            node-version: ['18.18.2']
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+          - name: Use Node.js ${{ matrix.node-version }}
+            uses: actions/setup-node@v3
+            with:
+              node-version: ${{ matrix.node-version }}
+              cache: 'npm'
+          - run: npm install
+          - run: npm run build --if-present
+          - run: ls
+          - uses: actions/upload-artifact@v3
+            with:
+              name: app-build
+              path: dist
