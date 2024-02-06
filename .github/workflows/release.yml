@@ -2,8 +2,9 @@ name: Node.js CI
 
 
 on:
-   release:
-      types: [created]
+   push:
+      branches:
+        - main
 
 
 jobs:
