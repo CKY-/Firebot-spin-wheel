@@ -5,7 +5,7 @@ import { readdir } from 'node:fs/promises';
 import { logger } from "./logger";
 import { webServer } from "./main";
 import { randomUUID } from "crypto";
-import { EventData, EV } from "./types";
+import { EventData, EV, PropsItem } from "./types";
 import { resolve } from "path";
 import effectTemplate from './effect-template.html';
 
@@ -15,7 +15,7 @@ const wait = (ms: number) => {
 };
 
 interface EffectModel {
-  variable: import("f:/FirebotScripts/firebot-SpinWheel/spinWheel/src/types").PropsItem[];
+  variable: PropsItem[];
   displayDuration: number;
   // endTriggerCallUrl: String;
   // inbetweenAnimation: any;
