@@ -96,11 +96,11 @@ export function overlaySpinWheelEffectType(
 
       $scope.setEasingType = function () {
         $scope.effect.easingValue = $scope.easingFunctions.findIndex((label: string) => {
-         // console.log(label);
-         // console.log($scope.effect.easingLabel);
+          // console.log(label);
+          // console.log($scope.effect.easingLabel);
           return label === $scope.effect.easingLabel;
         });
-       // console.log($scope.effect.easingValue, $scope.effect.easingLabel);
+        // console.log($scope.effect.easingValue, $scope.effect.easingLabel);
       }
 
       $scope.resetDefault = () => {
@@ -185,7 +185,7 @@ export function overlaySpinWheelEffectType(
             weight: 1
           }
         )
-       // console.log($scope.effect.EventData.props.items)
+        // console.log($scope.effect.EventData.props.items)
       }
 
       $scope.addSpinWheelItemLabelColor = () => {
@@ -337,12 +337,12 @@ export function overlaySpinWheelEffectType(
         }
         event.effect.EventData.props.items = JSON.parse(contents);
       }
-      else if (event.effect.fileOrList == "variable"){
-
-        if (typeof event.effect.EventData.props.items === "string") {
+      else if (event.effect.fileOrList == "variable") {
+        try {
           event.effect.EventData.props.items = JSON.parse(event.effect.variable);
+        } catch (err) {
+          logger.error("error reading variable", err);
         }
-
       }
 
       const data: EventData = {
@@ -608,7 +608,7 @@ export function overlaySpinWheelEffectType(
               return Math.floor(Math.random() * (max - min) + min);
             }
             // @ts-ignore
-           // wheel.pointerAngle = 90;
+            // wheel.pointerAngle = 90;
             const winningItemIndex = fetchWinningItemIndex();
             const duration = 2600;
             const revolutions = 4;
