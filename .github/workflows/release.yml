@@ -22,7 +22,7 @@ jobs:
           - run: npm install
           - run: npm run build --if-present
           - run: ls
-          - uses: actions/upload-artifact@v3
-            with:
-              name: app-build
-              path: dist
+          - name: Release
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            run: npx semantic-release --branches main
