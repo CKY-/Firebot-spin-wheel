@@ -55,7 +55,7 @@ export function overlaySpinWheelEffectType(
   const overlaySpinWheelEffectType: Firebot.EffectType<EffectModel> = {
     definition: {
       id: "cky:spin-wheel",
-      name: "Spin Wheel Overlay",
+      name: "Spin Wheel Overlay 2",
       description: "Spins a wheel in the overlay.",
       icon: "fad fa-spinner",
       categories: ["overlay"],
