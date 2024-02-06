@@ -15,6 +15,7 @@ const wait = (ms: number) => {
 };
 
 interface EffectModel {
+  variable: import("f:/FirebotScripts/firebot-SpinWheel/spinWheel/src/types").PropsItem[];
   displayDuration: number;
   // endTriggerCallUrl: String;
   // inbetweenAnimation: any;
@@ -335,6 +336,9 @@ export function overlaySpinWheelEffectType(
           logger.error("error reading file", err);
         }
         event.effect.EventData.props.items = JSON.parse(contents);
+      }
+      else if (event.effect.fileOrList == "variable"){
+        event.effect.EventData.props.items = event.effect.variable
       }
 
       const data: EventData = {

@@ -176,7 +176,7 @@
         </eos-container>
 
         <eos-container header="List">
-            <firebot-radios options="{ list: 'List', file: 'File' }" model="effect.fileOrList" inline="true"
+            <firebot-radios options="{ list: 'List', file: 'File', variable: 'Variable' }" model="effect.fileOrList" inline="true"
                 style="padding-bottom: 5px;" />
         </eos-container>
 
@@ -218,17 +218,35 @@
         </div>
     </setting-container>
 
+    <setting-container header="Variable" pad-top="true" collapsed="true" ng-if="effect.fileOrList === 'variable'">
+        <div style="margin-bottom: 10px;">
+            <firebot-input input-title="Array Variable:" model="effect.variable"
+                placeholder="Enter a name for the wheel item."></firebot-input>
+        </div>
+
+        <div class="effect-info alert alert-warning">
+
+            <div style="padding-top:10px">
+                <a ng-click="openLink('https://github.com/CKY-/Firebot-spin-wheel/blob/main/README.md')"
+                    class="clickable" uib-tooltip="View File Documentation" aria-label="View File Documentation"
+                    tooltip-append-to-body="true">
+                    Documentation
+                </a>
+            </div>
+        </div>
+    </setting-container>
+
     <setting-container header="File" pad-top="true" collapsed="true" ng-if="effect.fileOrList === 'file'">
         <file-chooser model="effect.filePath" options="{ filters: [ {name:'Text',extensions:['txt']} ]}"></file-chooser>
 
         <div class="effect-info alert alert-warning">
 
             <div style="padding-top:10px">
-                    <a ng-click="openLink('https://github.com/CKY-/Firebot-spin-wheel/blob/main/README.md')" class="clickable"
-                        uib-tooltip="View File Documentation" aria-label="View File Documentation"
-                        tooltip-append-to-body="true">
-                        Documentation
-                    </a>
+                <a ng-click="openLink('https://github.com/CKY-/Firebot-spin-wheel/blob/main/README.md')"
+                    class="clickable" uib-tooltip="View File Documentation" aria-label="View File Documentation"
+                    tooltip-append-to-body="true">
+                    Documentation
+                </a>
             </div>
         </div>
     </setting-container>
