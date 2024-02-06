@@ -338,7 +338,11 @@ export function overlaySpinWheelEffectType(
         event.effect.EventData.props.items = JSON.parse(contents);
       }
       else if (event.effect.fileOrList == "variable"){
-        event.effect.EventData.props.items = JSON.parse(event.effect.variable);
+
+        if (typeof event.effect.EventData.props.items === "string") {
+          event.effect.EventData.props.items = JSON.parse(event.effect.variable);
+        }
+
       }
 
       const data: EventData = {
