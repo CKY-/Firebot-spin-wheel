@@ -15,20 +15,18 @@ const wait = (ms: number) => {
 };
 
 interface EffectModel {
+  length: number;
   variable: string;
-  displayDuration: number;
-  // endTriggerCallUrl: String;
-  // inbetweenAnimation: any;
-  // inbetweenDelay: number;
-  // inbetweenDuration: number;
-  // inbetweenRepeat: any;
-  // enterAnimation: any;
-  // enterDuration: number;
-  // exitAnimation: any;
-  // exitDuration: number;
+  inbetweenAnimation: any;
+  inbetweenDelay: number;
+  inbetweenDuration: number;
+  inbetweenRepeat: any;
+  enterAnimation: any;
+  enterDuration: number;
+  exitAnimation: any;
+  exitDuration: number;
   // customCoords: any;
   // position: any;
-  // duration: number;
   // height: number;
   // width: number;
   // debugBorder: Boolean;
@@ -234,8 +232,8 @@ export function overlaySpinWheelEffectType(
 
     optionsValidator: (effect) => {
       let errors = [];
-      if (effect.displayDuration == null) {
-        errors.push("Please enter a value for the timer");
+      if (effect.length == null) {
+        errors.push("Please enter a value for duration");
       }
       return errors;
     },
@@ -346,6 +344,14 @@ export function overlaySpinWheelEffectType(
       }
 
       const data: EventData = {
+        enterAnimation: event.effect.enterAnimation,
+        exitAnimation: event.effect.exitAnimation,
+        enterDuration: event.effect.enterDuration,
+        exitDuration: event.effect.enterAnimation,
+        inbetweenAnimation: event.effect.inbetweenAnimation,
+        inbetweenDelay: event.effect.inbetweenDelay,
+        inbetweenDuration: event.effect.inbetweenDuration,
+        inbetweenRepeat: event.effect.inbetweenRepeat,
 
         easingValue: event.effect.easingValue,
         imageType: event.effect.imageType,
@@ -355,7 +361,7 @@ export function overlaySpinWheelEffectType(
         resourceToken: event.effect.resourceToken,
         overlayInstance: event.effect.overlayInstance,
         uuid: randomUUID(),
-        displayDuration: event.effect.displayDuration,
+        length: event.effect.length,
         props: event.effect.EventData.props
         // {
         //     name: "Takeaway",
@@ -416,6 +422,7 @@ export function overlaySpinWheelEffectType(
         //         }
         //     ]
         // }
+
       };
 
       if (event.effect.imageType == null) {
@@ -426,7 +433,7 @@ export function overlaySpinWheelEffectType(
 
         const resourceToken = resourceTokenManager.storeResourcePath(
           event.effect.imageFile,
-          event.effect.displayDuration
+          event.effect.length
         );
         data.resourceToken = resourceToken;
       }
@@ -449,7 +456,7 @@ export function overlaySpinWheelEffectType(
 
         const resourceToken = resourceTokenManager.storeResourcePath(
           fullFilePath,
-          event.effect.displayDuration
+          event.effect.length
         );
         data.resourceToken = resourceToken;
       }
@@ -493,8 +500,9 @@ export function overlaySpinWheelEffectType(
           // Frontend Code Here
           //const html = require('./spinhtml.html');
 
-          const html = /*html*/`<div id={{WHEELSPINDIVID}}>                    
-                                    <div class="spin-wheel">
+          const html = /*html*/`
+                              <div id={{WHEELSPINDIVID}}  class="position-wrapper middle-center">
+                                    <div id="spin-wheel" class="spin-wheel inner-position">
                                         <style>
                                             @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400&display=swap');
                                             @import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400&display=swap');
@@ -542,10 +550,11 @@ export function overlaySpinWheelEffectType(
                                         </style>
                                         <div class="wheel-wrapper"></div>
                                     </div>
-                                </div>`;
+                                </div>
+          `;
 
           function loadHtmlAndExecute() {
-            const { uuid, displayDuration, props } = event;
+            const { uuid, length, props } = event;
             const data = event;
             //console.log(data)
             if (data.imageType === "url") {
@@ -561,10 +570,10 @@ export function overlaySpinWheelEffectType(
             }
 
             $("#wrapper").append(html.replace("{{WHEELSPINDIVID}}", uuid));
+
             const container = document.getElementById(uuid).getElementsByClassName("wheel-wrapper")[0];
 
             //console.log('2');
-
             const easingFunctions = [
               {
                 label: 'default (easeSinOut)',
@@ -597,6 +606,23 @@ export function overlaySpinWheelEffectType(
               },
             ];
 
+            const mils = length * 1000;
+            // @ts-ignore
+            showTimedAnimatedElement(
+              `#${uuid}`,
+              data.enterAnimation,
+              data.enterDuration,
+              data.inbetweenAnimation,
+              data.inbetweenDelay,
+              data.inbetweenDuration,
+              data.inbetweenRepeat,
+              data.exitAnimation,
+              data.exitDuration,
+              length,
+              mils && mils > 0 ? mils : 8000,
+              null,
+            
+            );
             // @ts-ignore
             window.wheel = new spinWheel.Wheel(container, props);
             function fetchWinningItemIndex() {
@@ -613,7 +639,7 @@ export function overlaySpinWheelEffectType(
             const duration = 2600;
             const revolutions = 4;
             // @ts-ignore
-            wheel.spinToItem(winningItemIndex, duration, false, revolutions, 1, easingFunctions[data.easingValue].function);
+            setTimeout(() => wheel.spinToItem(winningItemIndex, duration, false, revolutions, 1, easingFunctions[data.easingValue].function), data.enterDuration * 1000)
 
             // @ts-ignore
             wheel.onRest = (e) => {
@@ -621,8 +647,7 @@ export function overlaySpinWheelEffectType(
               sendWebsocketEvent(uuid, { result: props.items[e.currentIndex].label });
               //console.log(e);
               //console.log(props.items[e.currentIndex].label);
-
-              setTimeout(() => $(`#${uuid}`).remove(), displayDuration * 1000);
+              setTimeout(() => $(`#${uuid}`).remove(), length * 1000);
             };
           }
 
@@ -656,6 +681,7 @@ export function overlaySpinWheelEffectType(
               loadHtmlAndExecute();
             }
             document.head.appendChild(spin_wheel);
+            loadHtmlAndExecute();
 
           } else {
             loadHtmlAndExecute();
@@ -666,3 +692,5 @@ export function overlaySpinWheelEffectType(
   };
   return overlaySpinWheelEffectType;
 }
+
+//$runEffect[``{ "id": "97ea3470-bd17-11ee-9735-adcee9f0ceb9", "type": "cky:spin-wheel", "active": true, "EventData": { "props": { "items": [{ "label": "One", "weight": "10" }, { "label": "two", "weight": 1 }, { "label": "Three", "weight": 1 }], "itemBackgroundColors": ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"], "itemLabelColors": ["#000"], "radius": 0.89, "itemLabelFontSizeMax": 500, "pointerAngle": 90, "pixelRatio": 0, "rotation": 0, "isInteractive": true, "itemLabelBaselineOffset": 0, "itemLabelRadius": 0.92, "itemLabelRadiusMax": 0.37, "itemLabelRotation": 0, "itemLabelStrokeColor": "#fff", "itemLabelFont": "Rubik", "rotationSpeedMax": 700, "rotationResistance": -31, "borderColor": "#000", "lineWidth": 0, "overlayImage": "https://cdn.discordapp.com/attachments/959615433848270859/1199955203898740839/wheel-2-overlay.png", "borderWidth": 0, "itemLabelAlign": "right", "name": "something" } }, "fileOrList": "list", "imageType": "url", "outputNames": { "winningSlice": "winningSlice" }, "displayDuration": "30", "imageUrl": "https://cdn.discordapp.com/attachments/1195710104834691182/1200288158907121755/wheel-1-overlay-2.png", "easingValue": 5, "easingLabel": "easeBounceOut", "enterAnimation": "fadeIn", "exitAnimation": "fadeOut", "inbetweenAnimation": "none", "enterDuration": "2s", "exitDuration": "1s", "length": "10" } ``]

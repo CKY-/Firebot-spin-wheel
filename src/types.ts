@@ -33,7 +33,15 @@ export interface PropsItem {
 }
 
 export interface EventData {
-    
+    inbetweenAnimation: string,
+    inbetweenDelay: number,
+    inbetweenDuration: number,
+    inbetweenRepeat: number,
+    length:number;
+    enterAnimation:string;
+    exitAnimation:string;
+    enterDuration:number;
+    exitDuration:number;
     easingValue: number;
     imageType: string;
     imageUrl: string;
@@ -42,7 +50,6 @@ export interface EventData {
     resourceToken: string | number | boolean;
     overlayInstance: String;
     uuid: string;
-    displayDuration: number
     props: Props;
 }
 

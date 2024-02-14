@@ -32,6 +32,7 @@ const script: Firebot.CustomScript<Params> = {
       res.setHeader('content-type', 'text/javascript');
       res.end(easing)
     });
+    
     webServer = httpServer
     initLogger(runRequest.modules.logger);
     //logger.info("SpinWheel Overlay Script is loading...");

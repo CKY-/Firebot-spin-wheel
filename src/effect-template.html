@@ -8,38 +8,6 @@
                 on-update="setEasingType()"></dropdown-select>
         </eos-container>
 
-        <!-- <div class="effect-specific-title" style="margin-bottom: 10px; margin-top: 10px; width: 100%">
-            <h4>easing</h4>
-        </div>-->
-        <!-- <div class="btn-group" style="margin-bottom: 10px; margin-top: 10px; width: 100%"> 
-            
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">
-                <span class="change-scene-type-effect-type">{{effect.EventData.easingLabel ?
-                    effect.EventData.easingLabel :
-                    "default (easeSinOut)"}}</span> <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li ng-click="effect.reset = false">
-                    <a ng-click="setEasingType(0)" href>default (easeSinOut)</a>
-                </li>
-                <li ng-click="effect.reset = false">
-                    <a ng-click="setEasingType(1)" href>easeSinInOut</a>
-                </li>
-                <li ng-click="effect.reset = true">
-                    <a ng-click="setEasingType(2)" href>easeCubicOut</a>
-                </li>
-                <li ng-click="effect.reset = true">
-                    <a ng-click="setEasingType(3)" href>easeCubicInOut</a>
-                </li>
-                <li ng-click="effect.reset = true">
-                    <a ng-click="setEasingType(4)" href>easeElasticOut</a>
-                </li>
-                <li ng-click="effect.reset = true">
-                    <a ng-click="setEasingType(5)" href>easeBounceOut</a>
-                </li>
-            </ul>
-        </div> -->
         <eos-container header="Image" pad-top="true">
             <div class="effect-setting-content">
                 <div style="padding-bottom: 10px;width: 100%;" ng-hide="effect.imageType === 'folderRandom'">
@@ -176,8 +144,8 @@
         </eos-container>
 
         <eos-container header="List">
-            <firebot-radios options="{ list: 'List', file: 'File', variable: 'Variable' }" model="effect.fileOrList" inline="true"
-                style="padding-bottom: 5px;" />
+            <firebot-radios options="{ list: 'List', file: 'File', variable: 'Variable' }" model="effect.fileOrList"
+                inline="true" style="padding-bottom: 5px;" />
         </eos-container>
 
         <div class="ml-4">
@@ -367,8 +335,9 @@
           <eos-overlay-instance effect="effect" class="setting-padtop"></eos-overlay-instance>
         </div>
     -->
-
-
+    <setting-container header="Animations" pad-top="true" collapsed="true">
+        <eos-enter-exit-animations effect="effect" class="setting-padtop"></eos-enter-exit-animations>
+    </setting-container>
 
     <div class="effect-setting-container setting-padtop">
         <div class="effect-specific-title">
@@ -378,7 +347,7 @@
             <div class="input-group">
                 <span class="input-group-addon">Seconds</span>
                 <input type="text" class="form-control" aria-describedby="image-length-effect-type"
-                    replace-variables="number" ng-model="effect.displayDuration">
+                    replace-variables="number" ng-model="effect.length">
             </div>
         </div>
     </div>
