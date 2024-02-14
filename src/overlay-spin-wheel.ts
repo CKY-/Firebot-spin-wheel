@@ -239,93 +239,6 @@ export function overlaySpinWheelEffectType(
     },
     onTriggerEvent: async (event) => {
 
-      // return new Promise((resolve) => {
-
-      //     const effect = event.effect;
-      //     logger.debug("effect: ", effect);
-      //     logger.debug("endTrigger: ", effect.endTriggerCallUrl);
-      //     const timeStamp = Date.now();
-      //     const removal = `timer_${timeStamp}`;
-
-      //     const styleHTML = html;
-
-      //     const jsHTML = `
-
-      //     `;
-
-      //     const contentsHTML = `
-
-      //     `
-
-      //     let duration = +effect.timerDuration + +2;
-      //     logger.debug('Duration: ', duration); // TODO: Remove before publishing
-      //     let timerTitle = effect.timerTitle;
-      //     logger.debug("removal1: ", removal);
-      //     let combineHTML = styleHTML + contentsHTML + jsHTML;
-
-      //     const timerHTML = `<div id="${removal}">${combineHTML}</div>`;
-      //     logger.debug("removal2: ", removal);
-
-      //     //data transfer object
-      //     let dto = {
-      //         length: duration,
-      //         inbetweenAnimation: effect.inbetweenAnimation,
-      //         inbetweenDelay: effect.inbetweenDelay,
-      //         inbetweenDuration: effect.inbetweenDuration,
-      //         inbetweenRepeat: effect.inbetweenRepeat,
-      //         enterAnimation: effect.enterAnimation,
-      //         enterDuration: effect.enterDuration,
-      //         exitAnimation: effect.exitAnimation,
-      //         exitDuration: effect.exitDuration,
-      //         customCoords: effect.customCoords,
-      //         position: effect.position,
-      //         duration: effect.duration,
-      //         height: effect.height,
-      //         width: effect.width,
-      //         justify: effect.justify,
-      //         align: effect.align,
-      //         debugBorder: effect.debugBorder,
-      //         dropShadow: effect.dropShadow,
-      //         overlayInstance: effect.overlayInstance,
-      //         html: timerHTML
-      //     };
-
-      //     // Ensure defaults
-      //     if (dto.duration <= 0) {
-      //         logger.debug("Effect duration is less than 0, resetting duration to 5 sec");
-      //         dto.duration = 5;
-      //     }
-
-      //     if (dto.height == null || dto.height < 1) {
-      //         logger.debug("Setting default height");
-      //         dto.height = 200;
-      //     }
-
-      //     if (dto.width == null || dto.width < 1) {
-      //         logger.debug("Setting default width");
-      //         dto.width = 400;
-      //     }
-
-      //     if (dto.position === "" || dto.position == null) {
-      //         logger.debug("Setting default overlay position");
-      //         dto.position = "Middle";
-      //     }
-
-      //     if (dto.justify == null) {
-      //         dto.justify = "center";
-      //     }
-
-      //     if (dto.align == null) {
-      //         dto.align = "center";
-      //     }
-
-      //     logger.info("Settings from overlayTimerEffect: ");
-      //     logger.debug("dto: ", dto);
-      //     runRequest.modules.httpServer.sendToOverlay("html", dto);
-      //     //webServer.sendToOverlay("html", dto);
-      //     return true;
-
-      // });
       if (event.effect.fileOrList == "file") {
         let contents: string;
         try {
@@ -363,66 +276,6 @@ export function overlaySpinWheelEffectType(
         uuid: randomUUID(),
         length: event.effect.length,
         props: event.effect.EventData.props
-        // {
-        //     name: "Takeaway",
-        //     radius: 0.89,
-        //     itemLabelFontSizeMax: 500,
-        //     pointerAngle: 90,
-        //     pixelRatio: 0,
-        //     rotation: 0,
-        //     isInteractive: true,
-        //     itemLabelBaselineOffset: 0,
-        //     itemLabelRadius: 0.92,
-        //     itemLabelRadiusMax: 0.37,
-        //     itemLabelRotation: 0,
-        //     itemLabelAlign: AlignText.right,
-        //     itemLabelColors: ["#000"],
-        //     itemLabelStrokeColor: '#fff',
-        //     itemLabelFont: "Rubik",
-        //     itemBackgroundColors: ["#fbf8c4", "#e4f1aa", "#c0d26e", "#ff7d7d"],
-        //     rotationSpeedMax: 700,
-        //     rotationResistance: -110,
-        //     borderColor: '#000',
-        //     lineWidth: 0,
-        //     overlayImage: "https://cdn.discordapp.com/attachments/959615433848270859/1196854408152088586/wheel-1-overlay.png",
-        //     borderWidth: 0,
-        //     debug: false, // So we can see pointer angle.
-        //     items: [
-        //         {
-        //             label: "Dog",
-        //             weight: 6
-        //         },
-        //         {
-        //             label: "Cat",
-        //             weight: 4.9
-        //         },
-        //         {
-        //             label: "Fish",
-        //             weight: 4.1
-        //         },
-        //         {
-        //             label: "Rabbit",
-        //             weight: 3.7
-        //         },
-        //         {
-        //             label: "Bird",
-        //             weight: 3
-        //         },
-        //         {
-        //             label: "Chicken",
-        //             weight: 2.8
-        //         },
-        //         {
-        //             label: "Lizard",
-        //             weight: 2.5
-        //         },
-        //         {
-        //             label: "Turtle",
-        //             weight: 1
-        //         }
-        //     ]
-        // }
-
       };
 
       if (event.effect.imageType == null) {
@@ -607,6 +460,7 @@ export function overlaySpinWheelEffectType(
             ];
 
             const mils = length * 1000;
+            console.log(mils && mils > 0 ? mils : 18000)
             // @ts-ignore
             showTimedAnimatedElement(
               `#${uuid}`,
@@ -618,10 +472,11 @@ export function overlaySpinWheelEffectType(
               data.inbetweenRepeat,
               data.exitAnimation,
               data.exitDuration,
-              length,
-              mils && mils > 0 ? mils : 8000,
+              mils && mils > 0 ? mils : 18000,
               null,
-            
+              () => {
+                setTimeout(() => $(`#${uuid}`).remove(), mils && mils > 0 ? mils : 18000);
+              }
             );
             // @ts-ignore
             window.wheel = new spinWheel.Wheel(container, props);
@@ -646,8 +501,8 @@ export function overlaySpinWheelEffectType(
               // @ts-ignore
               sendWebsocketEvent(uuid, { result: props.items[e.currentIndex].label });
               //console.log(e);
-              //console.log(props.items[e.currentIndex].label);
-              setTimeout(() => $(`#${uuid}`).remove(), length * 1000);
+              // console.log(length);
+              //setTimeout(() => $(`#${uuid}`).remove(), length * 1000);
             };
           }
 
