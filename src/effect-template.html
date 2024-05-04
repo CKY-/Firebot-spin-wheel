@@ -63,6 +63,15 @@
             </div>
         </eos-container>
 
+        <eos-container header="Rotation Duration" pad-top="true">
+                    <div>
+                        <div style="margin-bottom: 10px;">
+                            <firebot-input input-title="Milliseconds:" model="effect.EventData.duration"
+                                placeholder="Duration to spin the wheel"></firebot-input>
+                        </div>
+                    </div>
+        </eos-container>
+
         <eos-container header="Item Label Radius" pad-top="true">
             <div class="volume-slider-wrapper">
                 <rzslider rz-slider-model="effect.EventData.props.itemLabelRadius" rz-slider-options="
@@ -194,7 +203,7 @@
 
         <div class="effect-info alert alert-warning">
 
-            <div style="padding-top:10px">
+            <div>
                 <a ng-click="openLink('https://github.com/CKY-/Firebot-spin-wheel/blob/main/README.md')"
                     class="clickable" uib-tooltip="View File Documentation" aria-label="View File Documentation"
                     tooltip-append-to-body="true">
@@ -209,7 +218,7 @@
 
         <div class="effect-info alert alert-warning">
 
-            <div style="padding-top:10px">
+            <div>
                 <a ng-click="openLink('https://github.com/CKY-/Firebot-spin-wheel/blob/main/README.md')"
                     class="clickable" uib-tooltip="View File Documentation" aria-label="View File Documentation"
                     tooltip-append-to-body="true">

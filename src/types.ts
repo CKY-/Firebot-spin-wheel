@@ -51,6 +51,7 @@ export interface EventData {
     overlayInstance: String;
     uuid: string;
     props: Props;
+    duration: number;
 }
 
 export interface EV {

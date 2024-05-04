@@ -42,6 +42,7 @@ interface EffectModel {
   resourceToken: string | number | boolean;
   easingValue: number;
   easingLabel: string;
+  duration: number;
   //html: string;
 }
 
@@ -124,6 +125,7 @@ export function overlaySpinWheelEffectType(
         $scope.effect.EventData.props.borderColor = '#000';
         $scope.effect.EventData.props.lineWidth = 0;
         $scope.effect.EventData.props.borderWidth = 0;
+        $scope.effect.EventData.duration = 2600;
         $scope.effect.easingValue = 0;
         $scope.effect.easingLabel = $scope.easingFunctions[$scope.effect.easingValue];
       }
@@ -184,6 +186,9 @@ export function overlaySpinWheelEffectType(
           }
         )
         // console.log($scope.effect.EventData.props.items)
+      }
+      if ($scope.effect.duration == null) {
+        $scope.effect.duration = 2600;
       }
 
       $scope.addSpinWheelItemLabelColor = () => {
@@ -275,7 +280,8 @@ export function overlaySpinWheelEffectType(
         overlayInstance: event.effect.overlayInstance,
         uuid: randomUUID(),
         length: event.effect.length,
-        props: event.effect.EventData.props
+        props: event.effect.EventData.props,
+        duration: event.effect.duration
       };
 
       if (event.effect.imageType == null) {
@@ -491,10 +497,18 @@ export function overlaySpinWheelEffectType(
             // @ts-ignore
             // wheel.pointerAngle = 90;
             const winningItemIndex = fetchWinningItemIndex();
-            const duration = 2600;
+            
+            const durType = (data.enterDuration.toString().match(/[^\d.-]/g) || []).join("");
+            
+            let enterDuration = Number(data.enterDuration.toString().replace(/\D/g, ""));
+            if(durType == "s"){
+              enterDuration = enterDuration * 1000;
+            }
+
+            enterDuration = data.duration + enterDuration;
             const revolutions = 4;
             // @ts-ignore
-            setTimeout(() => wheel.spinToItem(winningItemIndex, duration, false, revolutions, 1, easingFunctions[data.easingValue].function), data.enterDuration * 1000)
+            setTimeout(() => wheel.spinToItem(winningItemIndex, data.duration, false, revolutions, 1, easingFunctions[data.easingValue].function), enterDuration)
 
             // @ts-ignore
             wheel.onRest = (e) => {
