@@ -281,7 +281,7 @@ export function overlaySpinWheelEffectType(
         uuid: randomUUID(),
         length: event.effect.length,
         props: event.effect.EventData.props,
-        duration: event.effect.duration
+        duration: event.effect.duration ?? 1
       };
 
       if (event.effect.imageType == null) {
@@ -421,8 +421,7 @@ export function overlaySpinWheelEffectType(
             } else {
               if (data.resourceToken != null) {
                 const token = encodeURIComponent(data.resourceToken);
-                data.props.overlayImage = `http://${window.location.hostname
-                  }:7472/resource/${token}`;
+                data.props.overlayImage = `http://${window.location.hostname}:7472/resource/${token}`;
               } else {
                 data.props.overlayImage = "https://cdn.discordapp.com/attachments/1195710104834691182/1200288158638682132/wheel-4-overlay-2.png"
               }
@@ -500,7 +499,8 @@ export function overlaySpinWheelEffectType(
             
             const durType = (data.enterDuration.toString().match(/[^\d.-]/g) || []).join("");
             
-            let enterDuration = Number(data.enterDuration.toString().replace(/\D/g, ""));
+            let enterDuration = Number(data.enterDuration.toString().replace(durType, ""));
+            console.log(data.enterDuration);
             if(durType == "s"){
               enterDuration = enterDuration * 1000;
             }
@@ -514,9 +514,9 @@ export function overlaySpinWheelEffectType(
             wheel.onRest = (e) => {
               // @ts-ignore
               sendWebsocketEvent(uuid, { result: props.items[e.currentIndex].label });
-              //console.log(e);
+              // console.log(e);
               // console.log(length);
-              //setTimeout(() => $(`#${uuid}`).remove(), length * 1000);
+              // setTimeout(() => $(`#${uuid}`).remove(), length * 1000);
             };
           }
 
