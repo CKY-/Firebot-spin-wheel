@@ -496,12 +496,14 @@ export function overlaySpinWheelEffectType(
             // @ts-ignore
             // wheel.pointerAngle = 90;
             const winningItemIndex = fetchWinningItemIndex();
-            
-            const durType = (data.enterDuration.toString().match(/[^\d.-]/g) || []).join("");
-            
-            let enterDuration = Number(data.enterDuration.toString().replace(durType, ""));
+            let durType = "s";
+            let enterDuration = 1;
+            if (data.enterDuration) {
+              durType = (data.enterDuration.toString().match(/[^\d.-]/g) || []).join("");
+              enterDuration = Number(data.enterDuration.toString().replace(durType, ""));
+            }
             console.log(data.enterDuration);
-            if(durType == "s"){
+            if (durType == "s") {
               enterDuration = enterDuration * 1000;
             }
 
