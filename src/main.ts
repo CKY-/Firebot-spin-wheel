@@ -26,14 +26,12 @@ const script: Firebot.CustomScript<Params> = {
   },
   run: (runRequest) => {
     const { effectManager, frontendCommunicator,resourceTokenManager, httpServer } = runRequest.modules;
-    
-    httpServer.unregisterCustomRoute("cky-spin", "easing.js", "GET");
-    httpServer.registerCustomRoute("cky-spin", "easing.js", "GET", (req: Request, res: Response) => {
+    webServer = httpServer
+    webServer.registerCustomRoute("cky-spin", "easing.js", "GET", (req: Request, res: Response) => {
       res.setHeader('content-type', 'text/javascript');
       res.end(easing)
     });
     
-    webServer = httpServer
     initLogger(runRequest.modules.logger);
     logger.info("SpinWheel Overlay Script is loading...");
     //logger.info(easing);
@@ -43,6 +41,9 @@ const script: Firebot.CustomScript<Params> = {
       overlaySpinWheelEffectType(request, frontendCommunicator, resourceTokenManager, runRequest)
     );
   },
+  stop: () => {
+    webServer.unregisterCustomRoute("cky-spin", "easing.js", "GET");
+  }
 };
 
 export let webServer: HttpServerManager;

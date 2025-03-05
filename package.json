@@ -13,7 +13,7 @@
   "author": "CKY",
   "license": "GNU3",
   "devDependencies": {
-    "@crowbartools/firebot-custom-scripts-types": "^5.60.1",
+    "@crowbartools/firebot-custom-scripts-types": "^5.63.1",
     "@types/jquery": "^3.5.29",
     "@types/node": "^18.18.2",
     "@types/uuid": "^9.0.7",

@@ -30,6 +30,7 @@ interface Props {
 export interface PropsItem {
     label: string;
     weight: number;
+    value: string;
 }
 
 export interface EventData {
@@ -57,6 +58,6 @@ export interface EventData {
 export interface EV {
     name: string;
     data: {
-        result: string;
+        result: PropsItem;
     }
 }

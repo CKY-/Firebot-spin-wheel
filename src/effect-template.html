@@ -72,6 +72,43 @@
                     </div>
         </eos-container>
 
+        <eos-container header="Rotation Resistance" pad-top="true">
+            <div class="volume-slider-wrapper">
+                <rzslider rz-slider-model="effect.EventData.props.rotationResistance" rz-slider-options="
+                    {
+                        floor: -200,
+                        ceil: 0,
+                        step: 1,
+                        precision: 1,
+                        hideLimitLabels: true,
+                        showSelectionBar: true
+                    }"></rzslider>
+            </div>
+            <div class="effect-info alert alert-warning">
+                For this to take effect you must interact with the wheel in the overlay
+                and manually spin it by clicking and snaping your mouse
+            </div>
+        </eos-container>
+
+        <eos-container header="Rotation Max Speed" pad-top="true">
+            <div class="volume-slider-wrapper">
+                <rzslider rz-slider-model="effect.EventData.props.rotationSpeedMax" rz-slider-options="
+                    {
+                        floor: 50,
+                        ceil: 1000,
+                        step: 1,
+                        precision: 1,
+                        hideLimitLabels: true,
+                        showSelectionBar: true
+                    }"></rzslider>
+            </div>
+            
+            <div class="effect-info alert alert-warning">
+                For this to take effect you must interact with the wheel in the overlay
+                and manually spin it by clicking and snaping your mouse
+            </div>
+        </eos-container>
+
         <eos-container header="Item Label Radius" pad-top="true">
             <div class="volume-slider-wrapper">
                 <rzslider rz-slider-model="effect.EventData.props.itemLabelRadius" rz-slider-options="

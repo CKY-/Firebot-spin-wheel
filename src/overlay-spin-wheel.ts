@@ -66,6 +66,11 @@ export function overlaySpinWheelEffectType(
           label: "Winning Slice",
           description: "Name of the winning slice",
           defaultName: "winningSlice"
+        },
+        {
+          label: "Winning Value",
+          description: "Value of the winning slice",
+          defaultName: "winningValue"
         }
       ],
       triggers: {
@@ -79,10 +84,11 @@ export function overlaySpinWheelEffectType(
         counter: true,
         preset: true,
         manual: true,
+        quick_action:true,
       },
     },
     optionsTemplate: effectTemplate,
-    optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any) => {
+    optionsController: ($scope: any, backendCommunicator: any, utilityService: any, $q: any, $rootScope: any) => {
 
       $scope.easingFunctions = [
         'default (easeSinOut)',
@@ -112,7 +118,7 @@ export function overlaySpinWheelEffectType(
         $scope.effect.EventData.props.itemLabelFontSizeMax = 500;
         $scope.effect.EventData.props.pointerAngle = 90;
         $scope.effect.EventData.props.pixelRatio = 0;
-        $scope.effect.EventData.props.rotation = 1;
+        $scope.effect.EventData.props.rotation = 4;
         $scope.effect.EventData.props.isInteractive = true;
         $scope.effect.EventData.props.itemLabelBaselineOffset = 0;
         $scope.effect.EventData.props.itemLabelRadius = 0.92;
@@ -207,6 +213,9 @@ export function overlaySpinWheelEffectType(
       $scope.showImage = false;
       $scope.imageLoaded = function (successful: boolean) {
         $scope.showImage = successful;
+      };
+      $scope.openLink = function (url: string) {
+        $rootScope.openLinkExternally(url);
       };
 
       $scope.getImagePreviewSrc = function () {
@@ -325,7 +334,7 @@ export function overlaySpinWheelEffectType(
         item.weight = parseFloat(item.weight) || 1;
       });
       //console.log("tokenOutsideCB:", data.resourceToken)
-      const waitPromise = new Promise<string>((resolve) => {
+      const waitPromise = new Promise<PropsItem>((resolve) => {
         const listener = (ev: EV) => {
           if (ev.name !== data.uuid) return;
           // @ts-ignore
@@ -344,7 +353,8 @@ export function overlaySpinWheelEffectType(
       return {
         success: true,
         outputs: {
-          winningSlice
+          winningSlice: winningSlice.label,
+          winningValue: winningSlice.value
         }
       };
     },
@@ -508,14 +518,14 @@ export function overlaySpinWheelEffectType(
             }
 
             enterDuration = data.duration + enterDuration;
-            const revolutions = 4;
+            const revolutions = data.props.rotation;
             // @ts-ignore
             setTimeout(() => wheel.spinToItem(winningItemIndex, data.duration, false, revolutions, 1, easingFunctions[data.easingValue].function), enterDuration)
 
             // @ts-ignore
             wheel.onRest = (e) => {
               // @ts-ignore
-              sendWebsocketEvent(uuid, { result: props.items[e.currentIndex].label });
+              sendWebsocketEvent(uuid, { result: props.items[e.currentIndex] });
               // console.log(e);
               // console.log(length);
               // setTimeout(() => $(`#${uuid}`).remove(), length * 1000);
