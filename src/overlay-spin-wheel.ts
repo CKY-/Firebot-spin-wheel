@@ -6,7 +6,6 @@ import { logger } from "./logger";
 import { webServer } from "./main";
 import { randomUUID } from "crypto";
 import { EventData, EV, PropsItem } from "./types";
-import { resolve } from "path";
 import effectTemplate from './effect-template.html';
 
 const fs = require("fs");
